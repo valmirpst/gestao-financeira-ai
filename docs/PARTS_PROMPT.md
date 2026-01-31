@@ -87,7 +87,7 @@ Inclua navegação para: Dashboard, Transações, Contas a Pagar, Categorias, Or
 
 ### ✅ Checkpoint: Verifique se a navegação funciona
 
-Instale e configure os seguintes componentes do shadcn/ui que vamos usar:
+<!-- Instale e configure os seguintes componentes do shadcn/ui que vamos usar:
 
 - button
 - card
@@ -108,7 +108,7 @@ Instale e configure os seguintes componentes do shadcn/ui que vamos usar:
 
 Use: npx shadcn-ui@latest add [component]
 
-Liste os comandos completos para eu executar.
+Liste os comandos completos para eu executar. -->
 
 ### ✅ Checkpoint: Execute os comandos
 
