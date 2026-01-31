@@ -61,7 +61,7 @@ Organize em um arquivo SQL executável. -->
 
 ### ✅ Checkpoint: Instale dependências e verifique se compila
 
-Crie os arquivos base de configuração:
+<!-- Crie os arquivos base de configuração:
 
 1. /src/lib/supabase.ts
    - Cliente do Supabase configurado
@@ -83,7 +83,7 @@ Crie os arquivos base de configuração:
    - Header
    - Container principal
 
-Inclua navegação para: Dashboard, Transações, Contas a Pagar, Categorias, Orçamentos, Contas
+Inclua navegação para: Dashboard, Transações, Contas a Pagar, Categorias, Orçamentos, Contas -->
 
 ### ✅ Checkpoint: Verifique se a navegação funciona
 
