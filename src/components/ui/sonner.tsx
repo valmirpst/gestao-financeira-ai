@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/useTheme";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -5,7 +6,6 @@ import {
   Loader2,
   XOctagon,
 } from "lucide-react";
-import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
