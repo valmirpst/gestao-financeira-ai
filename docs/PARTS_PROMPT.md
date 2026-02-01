@@ -283,7 +283,7 @@ Use shadcn Dialog, Badge, Button. -->
 
 ### ✅ Checkpoint: Teste CRUD completo de categorias
 
-Crie a página de contas em /src/pages/Accounts.tsx:
+<!-- Crie a página de contas em /src/pages/Accounts.tsx:
 
 1. Lista de contas ativas
 2. Para cada conta:
@@ -311,11 +311,11 @@ Crie a página de contas em /src/pages/Accounts.tsx:
    - Se pendente: Data de Vencimento
 
 Validações: não permitir transferência para mesma conta.
-Criar 2 transações vinculadas com transfer_id.
+Criar 2 transações vinculadas com transfer_id. -->
 
 ### ✅ Checkpoint: Teste CRUD de contas e transferências
 
-Crie a página /src/pages/Bills.tsx (Contas a Pagar/Receber):
+<!-- Crie a página /src/pages/Bills.tsx (Contas a Pagar/Receber):
 
 1. Cards de resumo no topo (4 cards):
    - Total a Pagar (pending + overdue)
@@ -340,11 +340,11 @@ Crie a página /src/pages/Bills.tsx (Contas a Pagar/Receber):
    - Status (badge)
    - Ação rápida: "Marcar como Pago" (botão icon)
 
-Use shadcn Tabs para alternar entre A Pagar/A Receber.
+Use shadcn Tabs para alternar entre A Pagar/A Receber. -->
 
 ###
 
-Crie o componente /src/components/bills/MarkAsPaidDialog.tsx:
+<!-- Crie o componente /src/components/bills/MarkAsPaidDialog.tsx:
 
 Dialog simples para marcar transação como paga:
 
@@ -365,7 +365,7 @@ Dialog simples para marcar transação como paga:
    - Atualizar lista
    - Se pago com atraso, mostrar mensagem "Pago com X dias de atraso"
 
-Integrar na listagem de Bills e Transactions.
+Integrar na listagem de Bills e Transactions. -->
 
 ### ✅ Checkpoint: Teste marcar pendentes como pagas
 

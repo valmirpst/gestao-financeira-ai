@@ -1,3 +1,4 @@
+import { MarkAsPaidDialog } from "@/components/bills/MarkAsPaidDialog";
 import { TransactionDialog } from "@/components/transactions/TransactionDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,11 +26,7 @@ import {
 } from "@/components/ui/table";
 import { useActiveAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
-import {
-  useDeleteTransaction,
-  useMarkAsPaid,
-  useTransactions,
-} from "@/hooks/useTransactions";
+import { useDeleteTransaction, useTransactions } from "@/hooks/useTransactions";
 import { cn, formatCurrency } from "@/lib/utils";
 import type { TransactionStatus, TransactionType } from "@/types";
 import type {
@@ -92,6 +89,11 @@ export default function Transactions() {
     to: undefined,
   });
 
+  // Mark as paid dialog state
+  const [markAsPaidDialogOpen, setMarkAsPaidDialogOpen] = useState(false);
+  const [transactionToMarkAsPaid, setTransactionToMarkAsPaid] =
+    useState<Transaction | null>(null);
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -112,7 +114,6 @@ export default function Transactions() {
 
   // Mutations
   const deleteMutation = useDeleteTransaction();
-  const markAsPaidMutation = useMarkAsPaid();
 
   // Filter transactions by search (client-side for description)
   const filteredTransactions = useMemo(() => {
@@ -161,13 +162,9 @@ export default function Transactions() {
     }
   };
 
-  const handleMarkAsPaid = async (id: string) => {
-    try {
-      await markAsPaidMutation.mutateAsync({ id });
-      toast.success("Transação marcada como paga!");
-    } catch (error) {
-      toast.error("Erro ao marcar transação como paga");
-    }
+  const handleOpenMarkAsPaidDialog = (transaction: Transaction) => {
+    setTransactionToMarkAsPaid(transaction);
+    setMarkAsPaidDialogOpen(true);
   };
 
   const clearFilters = () => {
@@ -472,8 +469,11 @@ export default function Transactions() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleMarkAsPaid(transaction.id)}
-                          disabled={markAsPaidMutation.isPending}
+                          onClick={() =>
+                            handleOpenMarkAsPaidDialog(
+                              transaction as Transaction,
+                            )
+                          }
                         >
                           <CheckCircle2 className="h-4 w-4" />
                         </Button>
@@ -574,6 +574,13 @@ export default function Transactions() {
         open={dialogOpen}
         onOpenChange={handleCloseDialog}
         transaction={selectedTransaction}
+      />
+
+      {/* Mark as Paid Dialog */}
+      <MarkAsPaidDialog
+        transaction={transactionToMarkAsPaid}
+        open={markAsPaidDialogOpen}
+        onOpenChange={setMarkAsPaidDialogOpen}
       />
     </div>
   );
