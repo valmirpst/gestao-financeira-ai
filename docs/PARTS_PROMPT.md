@@ -178,9 +178,9 @@ Calcular saldo atual e projetado conforme PRD. -->
 Use shadcn Card, Badge e Select.
 Implemente cálculos conforme PRD. -->
 
-### ✅ Checkpoint: Teste o Dashboard com dados mock
+### ✅ Checkpoint: Teste o Dashboard
 
-Crie a página de listagem em /src/pages/Transactions.tsx:
+<!-- Crie a página de listagem em /src/pages/Transactions.tsx:
 
 1. Header com:
    - Título "Transações"
@@ -207,7 +207,7 @@ Crie a página de listagem em /src/pages/Transactions.tsx:
 
 4. Paginação (50 itens por página)
 
-Use shadcn Table, Button, Badge, Input, Select.
+Use shadcn Table, Button, Badge, Input, Select. -->
 
 ###
 
