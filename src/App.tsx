@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -7,10 +8,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route
-            path="/dashboard"
-            element={<div>Dashboard - Em construção</div>}
-          />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route
             path="/transactions"
             element={<div>Transações - Em construção</div>}

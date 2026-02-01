@@ -160,7 +160,7 @@ Calcular saldo atual e projetado conforme PRD. -->
 
 ###
 
-Crie a página Dashboard em /src/pages/Dashboard.tsx com:
+<!-- Crie a página Dashboard em /src/pages/Dashboard.tsx com:
 
 1. Cards de Resumo (4 cards no topo):
    - Total de Entradas (mês atual, apenas paid)
@@ -176,7 +176,7 @@ Crie a página Dashboard em /src/pages/Dashboard.tsx com:
    - Período customizado (date picker)
 
 Use shadcn Card, Badge e Select.
-Implemente cálculos conforme PRD.
+Implemente cálculos conforme PRD. -->
 
 ### ✅ Checkpoint: Teste o Dashboard com dados mock
 
