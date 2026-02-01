@@ -1,10 +1,31 @@
+import { Badge } from "@/components/ui/badge";
 import { useNavigationLinks } from "@/hooks/useNavigationLinks";
+import { useTransactions } from "@/hooks/useTransactions";
 import { cn } from "@/lib/utils";
+import { addDays, format, isPast } from "date-fns";
+import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export function Sidebar() {
   const navigation = useNavigationLinks();
   const location = useLocation();
+
+  // Buscar contas vencidas (próximos 30 dias para pegar as vencidas)
+  const today = new Date();
+  const { data: upcomingBills = [] } = useTransactions({
+    start_date: format(today, "yyyy-MM-dd"),
+    end_date: format(addDays(today, 30), "yyyy-MM-dd"),
+  });
+
+  // Contar contas vencidas
+  const overdueCount = useMemo(() => {
+    return upcomingBills.filter(
+      (t) =>
+        (t.status === "overdue" ||
+          (t.due_date && isPast(new Date(t.due_date)))) &&
+        t.status !== "paid",
+    ).length;
+  }, [upcomingBills]);
 
   return (
     <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-card border-r">
@@ -19,6 +40,7 @@ export function Sidebar() {
           {navigation.map((item) => {
             const isActive = location.pathname === item.href;
             const Icon = item.icon;
+            const showBadge = item.href === "/bills" && overdueCount > 0;
 
             return (
               <Link
@@ -32,7 +54,12 @@ export function Sidebar() {
                 )}
               >
                 <Icon className="h-5 w-5" />
-                {item.name}
+                <span className="flex-1">{item.name}</span>
+                {showBadge && (
+                  <Badge variant="destructive" className="ml-auto">
+                    {overdueCount}
+                  </Badge>
+                )}
               </Link>
             );
           })}

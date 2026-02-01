@@ -369,7 +369,7 @@ Integrar na listagem de Bills e Transactions. -->
 
 ### ✅ Checkpoint: Teste marcar pendentes como pagas
 
-Atualize o Dashboard (/src/pages/Dashboard.tsx) para incluir:
+<!-- Atualize o Dashboard (/src/pages/Dashboard.tsx) para incluir:
 
 1. Seção "Próximos Vencimentos" (abaixo das transações recentes):
    - Lista dos próximos 5 vencimentos
@@ -380,7 +380,7 @@ Atualize o Dashboard (/src/pages/Dashboard.tsx) para incluir:
    - Click no card leva para /bills com filtro aplicado
 
 3. Adicionar indicador no menu lateral:
-   - Badge com count de contas vencidas no item "Contas a Pagar"
+   - Badge com count de contas vencidas no item "Contas a Pagar" -->
 
 ### ✅ Checkpoint: Verifique alertas e vencimentos no Dashboard
 

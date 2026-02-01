@@ -45,12 +45,19 @@ import {
   DollarSign,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 type StatusFilter = "all" | "pending" | "overdue";
 type PeriodFilter = "7days" | "30days" | "overdue" | "custom";
 
 export default function Bills() {
-  const [activeTab, setActiveTab] = useState<TransactionType>("expense");
+  const [searchParams] = useSearchParams();
+
+  // Get initial tab from URL search params
+  const initialTab = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState<TransactionType>(
+    initialTab === "income" ? "income" : "expense",
+  );
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("30days");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
