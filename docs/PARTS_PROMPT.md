@@ -112,7 +112,7 @@ Liste os comandos completos para eu executar. -->
 
 ### ✅ Checkpoint: Execute os comandos
 
-Crie o service completo para transações em /src/services/transactions.service.ts:
+<!-- Crie o service completo para transações em /src/services/transactions.service.ts:
 
 Funções necessárias:
 
@@ -126,11 +126,11 @@ Funções necessárias:
 
 Use React Query para cache.
 Inclua tratamento de erros completo.
-Retorne tipos corretos do TypeScript.
+Retorne tipos corretos do TypeScript. -->
 
 ###
 
-Crie o service completo para categorias em /src/services/categories.service.ts:
+<!-- Crie o service completo para categorias em /src/services/categories.service.ts:
 
 Funções necessárias:
 
@@ -141,11 +141,11 @@ Funções necessárias:
 - deleteCategory(id)
 - createDefaultCategories() - criar categorias padrão do PRD
 
-Inclua validações e tratamento de erros.
+Inclua validações e tratamento de erros. -->
 
 ###
 
-Crie o service completo para contas em /src/services/accounts.service.ts:
+<!-- Crie o service completo para contas em /src/services/accounts.service.ts:
 
 Funções necessárias:
 
@@ -156,7 +156,7 @@ Funções necessárias:
 - deleteAccount(id) - apenas marcar como inativa
 - createTransfer(fromAccountId, toAccountId, amount, date, description)
 
-Calcular saldo atual e projetado conforme PRD.
+Calcular saldo atual e projetado conforme PRD. -->
 
 ###
 
