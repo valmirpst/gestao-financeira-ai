@@ -256,6 +256,7 @@ Toast de sucesso/erro após salvar. -->
 
 ### ✅ Checkpoint: Teste criar transações pagas e pendentes
 
+<!--
 Crie a página de categorias em /src/pages/Categories.tsx:
 
 1. Lista agrupada por tipo (Entradas / Saídas)
@@ -278,7 +279,7 @@ Crie a página de categorias em /src/pages/Categories.tsx:
 
 5. Ao criar usuário, criar categorias padrão do PRD
 
-Use shadcn Dialog, Badge, Button.
+Use shadcn Dialog, Badge, Button. -->
 
 ### ✅ Checkpoint: Teste CRUD completo de categorias
 

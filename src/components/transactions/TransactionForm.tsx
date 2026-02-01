@@ -190,9 +190,8 @@ export function TransactionForm({
       ...rest
     } = values;
 
-    const data: TransactionInsert = {
+    const data: Omit<TransactionInsert, "user_id"> = {
       ...rest,
-      user_id: "", // Will be set by the service
       date: payment_date
         ? format(payment_date, "yyyy-MM-dd")
         : format(new Date(), "yyyy-MM-dd"),
@@ -213,7 +212,7 @@ export function TransactionForm({
       category_id: rest.category_id || null,
     };
 
-    onSubmit(data);
+    onSubmit(data as TransactionInsert);
   };
 
   // Handle tag input

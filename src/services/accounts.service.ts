@@ -117,6 +117,15 @@ export async function getAccountById(
  */
 export async function createAccount(data: AccountInsert): Promise<Account> {
   try {
+    // Buscar usuário autenticado
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("Usuário não autenticado");
+    }
+
     // Validações
     if (!data.name || !data.type) {
       throw new Error("Campos obrigatórios não preenchidos");
@@ -130,6 +139,7 @@ export async function createAccount(data: AccountInsert): Promise<Account> {
       .from("accounts")
       .insert({
         ...data,
+        user_id: user.id,
         current_balance: data.initial_balance,
       })
       .select()
@@ -169,6 +179,7 @@ export async function updateAccount(
       throw new Error("Nome deve ter entre 2 e 100 caracteres");
     }
 
+    // @ts-ignore - Supabase type mismatch
     const { data, error } = await supabase
       .from("accounts")
       .update(updates)

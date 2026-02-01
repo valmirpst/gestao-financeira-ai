@@ -63,6 +63,15 @@ export async function getCategoryById(id: string): Promise<Category> {
  */
 export async function createCategory(data: CategoryInsert): Promise<Category> {
   try {
+    // Buscar usuário autenticado
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("Usuário não autenticado");
+    }
+
     // Validações
     if (!data.name || !data.type || !data.color || !data.icon) {
       throw new Error("Campos obrigatórios não preenchidos");
@@ -87,7 +96,10 @@ export async function createCategory(data: CategoryInsert): Promise<Category> {
 
     const { data: category, error } = await supabase
       .from("categories")
-      .insert(data)
+      .insert({
+        ...data,
+        user_id: user.id,
+      })
       .select()
       .single();
 
@@ -147,6 +159,7 @@ export async function updateCategory(
       }
     }
 
+    // @ts-ignore - Supabase type mismatch
     const { data, error } = await supabase
       .from("categories")
       .update(updates)

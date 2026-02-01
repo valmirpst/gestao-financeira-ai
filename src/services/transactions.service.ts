@@ -108,6 +108,15 @@ export async function createTransaction(
   data: TransactionInsert,
 ): Promise<Transaction> {
   try {
+    // Buscar usuário autenticado
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("Usuário não autenticado");
+    }
+
     // Validações
     if (!data.type || !data.amount || !data.description) {
       throw new Error("Campos obrigatórios não preenchidos");
@@ -129,7 +138,10 @@ export async function createTransaction(
 
     const { data: transaction, error } = await supabase
       .from("transactions")
-      .insert(data)
+      .insert({
+        ...data,
+        user_id: user.id,
+      })
       .select()
       .single();
 
