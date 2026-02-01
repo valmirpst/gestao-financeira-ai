@@ -1,3 +1,4 @@
+import { TransactionDialog } from "@/components/transactions/TransactionDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -31,7 +32,10 @@ import {
 } from "@/hooks/useTransactions";
 import { cn, formatCurrency } from "@/lib/utils";
 import type { TransactionStatus, TransactionType } from "@/types";
-import type { TransactionWithRelations } from "@/types/database.types";
+import type {
+  Transaction,
+  TransactionWithRelations,
+} from "@/types/database.types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -68,6 +72,12 @@ const statusVariants: Record<
 };
 
 export default function Transactions() {
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<
+    Transaction | undefined
+  >(undefined);
+
   // Filters state
   const [type, setType] = useState<TransactionType | "all">("all");
   const [status, setStatus] = useState<TransactionStatus | "all">("all");
@@ -186,6 +196,22 @@ export default function Transactions() {
     return transaction.account.name || "Sem conta";
   };
 
+  // Dialog handlers
+  const handleOpenCreateDialog = () => {
+    setSelectedTransaction(undefined);
+    setDialogOpen(true);
+  };
+
+  const handleOpenEditDialog = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setSelectedTransaction(undefined);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -196,7 +222,7 @@ export default function Transactions() {
             Gerencie todas as suas transações financeiras
           </p>
         </div>
-        <Button>
+        <Button onClick={handleOpenCreateDialog}>
           <Plus className="mr-2 h-4 w-4" />
           Nova Transação
         </Button>
@@ -452,7 +478,13 @@ export default function Transactions() {
                           <CheckCircle2 className="h-4 w-4" />
                         </Button>
                       )}
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          handleOpenEditDialog(transaction as Transaction)
+                        }
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
@@ -536,6 +568,13 @@ export default function Transactions() {
           </div>
         </div>
       )}
+
+      {/* Transaction Dialog */}
+      <TransactionDialog
+        open={dialogOpen}
+        onOpenChange={handleCloseDialog}
+        transaction={selectedTransaction}
+      />
     </div>
   );
 }

@@ -211,6 +211,7 @@ Use shadcn Table, Button, Badge, Input, Select. -->
 
 ###
 
+<!--
 Crie o formulário de transação em /src/components/transactions/TransactionForm.tsx:
 
 Campos:
@@ -229,11 +230,11 @@ Campos condicionais:
 - Se status = "Pendente": mostrar campo "Data de Vencimento" (date picker, obrigatório)
 
 Use React Hook Form + Zod para validação.
-Validações conforme PRD.
+Validações conforme PRD. -->
 
 ###
 
-Continue o TransactionForm adicionando:
+<!-- Continue o TransactionForm adicionando:
 
 1. Toggle "Transação Recorrente" (checkbox)
 
@@ -251,7 +252,7 @@ Se marcado, mostrar:
 3. Criar modal/dialog para o formulário
 4. Criar componente /src/components/transactions/TransactionDialog.tsx que usa o form
 
-Toast de sucesso/erro após salvar.
+Toast de sucesso/erro após salvar. -->
 
 ### ✅ Checkpoint: Teste criar transações pagas e pendentes
 
