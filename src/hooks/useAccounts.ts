@@ -6,6 +6,7 @@ import type {
   AccountWithProjection,
 } from "@/types/database.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 /**
  * Hook para buscar todas as contas
@@ -49,6 +50,9 @@ export function useCreateAccount() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao criar conta");
+    },
   });
 }
 
@@ -64,6 +68,9 @@ export function useUpdateAccount() {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["account", variables.id] });
     },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar conta");
+    },
   });
 }
 
@@ -77,6 +84,9 @@ export function useDeleteAccount() {
     mutationFn: accountsService.deleteAccount,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao arquivar conta");
     },
   });
 }
@@ -121,6 +131,9 @@ export function useCreateTransfer() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao criar transferência");
     },
   });
 }

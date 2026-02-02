@@ -7,6 +7,7 @@ import type {
   TransactionWithRelations,
 } from "@/types/database.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 /**
  * Hook para buscar transações com filtros
@@ -45,10 +46,17 @@ export function useRecentTransactions(limit: number = 5) {
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
 
-  return useMutation<Transaction, Error, TransactionInsert>({
+  return useMutation<
+    Transaction,
+    Error,
+    TransactionInsert & { account_id?: string }
+  >({
     mutationFn: transactionsService.createTransaction,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao criar transação");
     },
   });
 }
@@ -62,7 +70,7 @@ export function useUpdateTransaction() {
   return useMutation<
     Transaction,
     Error,
-    { id: string; updates: TransactionUpdate }
+    { id: string; updates: TransactionUpdate & { account_id?: string } }
   >({
     mutationFn: ({ id, updates }) =>
       transactionsService.updateTransaction(id, updates),
@@ -71,6 +79,9 @@ export function useUpdateTransaction() {
       queryClient.invalidateQueries({
         queryKey: ["transaction", variables.id],
       });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar transação");
     },
   });
 }
@@ -86,6 +97,9 @@ export function useDeleteTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao deletar transação");
+    },
   });
 }
 
@@ -100,6 +114,9 @@ export function useMarkAsPaid() {
       transactionsService.markAsPaid(id, paymentDate),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao marcar transação como paga");
     },
   });
 }

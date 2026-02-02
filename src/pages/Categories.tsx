@@ -2,12 +2,15 @@ import { CategoryDialog } from "@/components/categories/CategoryDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useCategories } from "@/hooks/useCategories";
+import {
+  useCategories,
+  useCreateDefaultCategories,
+} from "@/hooks/useCategories";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatCurrency } from "@/lib/utils";
 import type { Category } from "@/types/database.types";
 import { endOfMonth, format, startOfMonth } from "date-fns";
-import { Edit, Plus } from "lucide-react";
+import { Edit, Loader2, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 
 export default function Categories() {
@@ -18,6 +21,10 @@ export default function Categories() {
 
   // Fetch data
   const { data: categories = [], isLoading } = useCategories();
+  const {
+    mutateAsync: createDefaultCategories,
+    isPending: isCreatingDefaultCategories,
+  } = useCreateDefaultCategories();
 
   // Get current month dates
   const today = new Date();
@@ -74,6 +81,10 @@ export default function Categories() {
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setSelectedCategory(undefined);
+  };
+
+  const handleCreateDefaultCategories = async () => {
+    await createDefaultCategories();
   };
 
   // Render category item
@@ -163,6 +174,23 @@ export default function Categories() {
       {isLoading ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground">Carregando categorias...</p>
+        </div>
+      ) : categories.length === 0 ? (
+        <div className="text-center py-12 space-y-4">
+          <p className="text-muted-foreground">Nenhuma categoria cadastrada</p>
+          <Button onClick={handleCreateDefaultCategories}>
+            {isCreatingDefaultCategories ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Adicionando categorias...
+              </>
+            ) : (
+              <>
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar categorias padrão
+              </>
+            )}
+          </Button>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2">

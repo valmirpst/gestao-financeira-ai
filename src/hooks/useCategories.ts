@@ -6,6 +6,7 @@ import type {
   CategoryWithParent,
 } from "@/types/database.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 /**
  * Hook para buscar todas as categorias
@@ -39,6 +40,9 @@ export function useCreateCategory() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao criar categoria");
+    },
   });
 }
 
@@ -55,6 +59,9 @@ export function useUpdateCategory() {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["category", variables.id] });
     },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar categoria");
+    },
   });
 }
 
@@ -69,6 +76,9 @@ export function useDeleteCategory() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao deletar categoria");
+    },
   });
 }
 
@@ -82,6 +92,9 @@ export function useCreateDefaultCategories() {
     mutationFn: categoriesService.createDefaultCategories,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao criar categorias padrão");
     },
   });
 }

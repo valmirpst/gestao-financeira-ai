@@ -46,8 +46,24 @@ export async function getTransactions(
       query = query.eq("category_id", filters.category_id);
     }
 
+    // Filtrar por account_id requer uma abordagem diferente
+    // pois a relação é através da tabela account_transactions
+    let transactionIds: string[] | undefined;
     if (filters?.account_id) {
-      query = query.eq("account_id", filters.account_id);
+      const { data: accountTransactions } = await supabase
+        .from("account_transactions")
+        .select("transaction_id")
+        .eq("account_id", filters.account_id);
+
+      if (accountTransactions) {
+        transactionIds = accountTransactions.map((at) => at.transaction_id);
+        if (transactionIds.length > 0) {
+          query = query.in("id", transactionIds);
+        } else {
+          // Se não há transações para esta conta, retornar array vazio
+          return [];
+        }
+      }
     }
 
     if (filters?.start_date) {
@@ -105,7 +121,7 @@ export async function getTransactionById(id: string): Promise<Transaction> {
  * Cria uma nova transação
  */
 export async function createTransaction(
-  data: TransactionInsert,
+  data: TransactionInsert & { account_id?: string },
 ): Promise<Transaction> {
   try {
     // Buscar usuário autenticado
@@ -136,10 +152,14 @@ export async function createTransaction(
       throw new Error("Data de pagamento é obrigatória para transações pagas");
     }
 
+    // Extrair account_id dos dados (não faz parte da tabela transactions)
+    const { account_id, ...transactionData } = data;
+
+    // Criar a transação
     const { data: transaction, error } = await supabase
       .from("transactions")
       .insert({
-        ...data,
+        ...transactionData,
         user_id: user.id,
       })
       .select()
@@ -151,6 +171,24 @@ export async function createTransaction(
 
     if (!transaction) {
       throw new Error("Erro ao criar transação");
+    }
+
+    // Se account_id foi fornecido, criar a relação na tabela account_transactions
+    if (account_id) {
+      const { error: accountTransactionError } = await supabase
+        .from("account_transactions")
+        .insert({
+          transaction_id: transaction.id,
+          account_id: account_id,
+        });
+
+      if (accountTransactionError) {
+        // Se falhar ao criar a relação, deletar a transação criada
+        await supabase.from("transactions").delete().eq("id", transaction.id);
+        throw new Error(
+          `Erro ao vincular conta à transação: ${accountTransactionError.message}`,
+        );
+      }
     }
 
     return transaction;
@@ -165,7 +203,7 @@ export async function createTransaction(
  */
 export async function updateTransaction(
   id: string,
-  updates: TransactionUpdate,
+  updates: TransactionUpdate & { account_id?: string },
 ): Promise<Transaction> {
   try {
     // Validações
@@ -183,9 +221,13 @@ export async function updateTransaction(
       throw new Error("Data de pagamento é obrigatória para transações pagas");
     }
 
+    // Extrair account_id dos updates (não faz parte da tabela transactions)
+    const { account_id, ...transactionUpdates } = updates;
+
+    // Atualizar a transação
     const { data, error } = await supabase
       .from("transactions")
-      .update(updates)
+      .update(transactionUpdates)
       .eq("id", id)
       .select()
       .single();
@@ -196,6 +238,29 @@ export async function updateTransaction(
 
     if (!data) {
       throw new Error("Transação não encontrada");
+    }
+
+    // Se account_id foi fornecido, atualizar a relação na tabela account_transactions
+    if (account_id !== undefined) {
+      // Primeiro, deletar a relação existente
+      await supabase
+        .from("account_transactions")
+        .delete()
+        .eq("transaction_id", id);
+
+      // Depois, criar a nova relação
+      const { error: accountTransactionError } = await supabase
+        .from("account_transactions")
+        .insert({
+          transaction_id: id,
+          account_id: account_id,
+        });
+
+      if (accountTransactionError) {
+        throw new Error(
+          `Erro ao atualizar conta da transação: ${accountTransactionError.message}`,
+        );
+      }
     }
 
     return data;

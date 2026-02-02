@@ -1,30 +1,58 @@
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Layout } from "@/components/layout/Layout";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Accounts from "./pages/Accounts";
 import Bills from "./pages/Bills";
 import Categories from "./pages/Categories";
 import Dashboard from "./pages/Dashboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Transactions from "./pages/Transactions";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Layout>
+    <AuthProvider>
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/transactions" element={<Transactions />} />
-          <Route path="/bills" element={<Bills />} />
-          <Route path="/categories" element={<Categories />} />
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
+          {/* Protected Routes */}
           <Route
-            path="/budgets"
-            element={<div>Orçamentos - Em construção</div>}
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Routes>
+                    <Route
+                      path="/"
+                      element={<Navigate to="/dashboard" replace />}
+                    />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/transactions" element={<Transactions />} />
+                    <Route path="/bills" element={<Bills />} />
+                    <Route path="/categories" element={<Categories />} />
+                    <Route
+                      path="/budgets"
+                      element={<div>Orçamentos - Em construção</div>}
+                    />
+                    <Route path="/accounts" element={<Accounts />} />
+                    <Route
+                      path="*"
+                      element={<Navigate to="/dashboard" replace />}
+                    />
+                  </Routes>
+                </Layout>
+              </ProtectedRoute>
+            }
           />
-          <Route path="/accounts" element={<Accounts />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
-      </Layout>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
