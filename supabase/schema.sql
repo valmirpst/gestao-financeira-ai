@@ -170,26 +170,103 @@ CREATE INDEX idx_budgets_dates ON budgets(start_date, end_date);
 -- =====================================================
 
 -- -----------------------------------------------------
--- Function: update_account_balance
--- Atualiza o saldo atual da conta baseado em transações pagas
+-- Function: update_account_balance_from_account_transactions
+-- Atualiza o saldo da conta quando account_transactions muda
+-- IMPORTANTE: Esta função é chamada ANTES do CASCADE, garantindo
+-- que o account_id seja capturado corretamente
 -- -----------------------------------------------------
-CREATE OR REPLACE FUNCTION update_account_balance()
+CREATE OR REPLACE FUNCTION update_account_balance_from_account_transactions()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_account_id UUID;
+  v_transaction_status VARCHAR(10);
+BEGIN
+  -- Determina o account_id baseado na operação
+  IF TG_OP = 'DELETE' THEN
+    v_account_id := OLD.account_id;
+    
+    -- Busca o status da transação que está sendo deletada
+    SELECT status INTO v_transaction_status
+    FROM transactions
+    WHERE id = OLD.transaction_id;
+    
+  ELSIF TG_OP = 'INSERT' THEN
+    v_account_id := NEW.account_id;
+    
+    -- Busca o status da transação que está sendo inserida
+    SELECT status INTO v_transaction_status
+    FROM transactions
+    WHERE id = NEW.transaction_id;
+    
+  ELSE -- UPDATE
+    -- Para UPDATE, pode ter mudado de conta
+    v_account_id := NEW.account_id;
+    
+    SELECT status INTO v_transaction_status
+    FROM transactions
+    WHERE id = NEW.transaction_id;
+    
+    -- Se mudou de conta, atualiza a conta antiga também
+    IF OLD.account_id != NEW.account_id THEN
+      UPDATE accounts
+      SET 
+        current_balance = initial_balance + (
+          SELECT COALESCE(SUM(
+            CASE 
+              WHEN t.type = 'income' THEN t.amount 
+              ELSE -t.amount 
+            END
+          ), 0)
+          FROM transactions t
+          JOIN account_transactions at ON t.id = at.transaction_id
+          WHERE at.account_id = OLD.account_id
+            AND t.status = 'paid'
+        ),
+        updated_at = NOW()
+      WHERE id = OLD.account_id;
+    END IF;
+  END IF;
+
+  -- Atualiza o saldo da conta (nova ou atual)
+  UPDATE accounts
+  SET 
+    current_balance = initial_balance + (
+      SELECT COALESCE(SUM(
+        CASE 
+          WHEN t.type = 'income' THEN t.amount 
+          ELSE -t.amount 
+        END
+      ), 0)
+      FROM transactions t
+      JOIN account_transactions at ON t.id = at.transaction_id
+      WHERE at.account_id = v_account_id
+        AND t.status = 'paid'
+    ),
+    updated_at = NOW()
+  WHERE id = v_account_id;
+
+  IF TG_OP = 'DELETE' THEN
+    RETURN OLD;
+  ELSE
+    RETURN NEW;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- -----------------------------------------------------
+-- Function: update_account_balance_on_transaction_change
+-- Atualiza o saldo quando status, valor ou tipo da transação muda
+-- -----------------------------------------------------
+CREATE OR REPLACE FUNCTION update_account_balance_on_transaction_change()
 RETURNS TRIGGER AS $$
 DECLARE
   v_account_id UUID;
 BEGIN
-  -- Determina o account_id baseado na operação
-  IF TG_OP = 'DELETE' THEN
-    SELECT account_id INTO v_account_id 
-    FROM account_transactions 
-    WHERE transaction_id = OLD.id 
-    LIMIT 1;
-  ELSE
-    SELECT account_id INTO v_account_id 
-    FROM account_transactions 
-    WHERE transaction_id = NEW.id 
-    LIMIT 1;
-  END IF;
+  -- Busca a conta associada a esta transação
+  SELECT account_id INTO v_account_id
+  FROM account_transactions
+  WHERE transaction_id = NEW.id
+  LIMIT 1;
 
   -- Se encontrou a conta, atualiza o saldo
   IF v_account_id IS NOT NULL THEN
@@ -211,11 +288,7 @@ BEGIN
     WHERE id = v_account_id;
   END IF;
 
-  IF TG_OP = 'DELETE' THEN
-    RETURN OLD;
-  ELSE
-    RETURN NEW;
-  END IF;
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -233,6 +306,66 @@ BEGIN
     updated_at = NOW()
   WHERE status = 'pending'
     AND due_date < CURRENT_DATE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- -----------------------------------------------------
+-- Function: recalculate_all_account_balances
+-- Recalcula o saldo de todas as contas baseado nas transações pagas
+-- Útil para corrigir inconsistências
+-- -----------------------------------------------------
+CREATE OR REPLACE FUNCTION recalculate_all_account_balances()
+RETURNS void AS $$
+BEGIN
+  WITH balance_calculations AS (
+    SELECT 
+      a.id,
+      a.name,
+      a.current_balance as old_balance,
+      a.initial_balance + COALESCE(SUM(
+        CASE 
+          WHEN t.type = 'income' THEN t.amount 
+          ELSE -t.amount 
+        END
+      ), 0) as calculated_balance
+    FROM accounts a
+    LEFT JOIN account_transactions at ON a.id = at.account_id
+    LEFT JOIN transactions t ON at.transaction_id = t.id AND t.status = 'paid'
+    GROUP BY a.id, a.name, a.current_balance, a.initial_balance
+  )
+  UPDATE accounts
+  SET 
+    current_balance = bc.calculated_balance,
+    updated_at = NOW()
+  FROM balance_calculations bc
+  WHERE accounts.id = bc.id
+    AND accounts.current_balance != bc.calculated_balance;
+END;
+$$ LANGUAGE plpgsql;
+
+-- -----------------------------------------------------
+-- Function: recalculate_account_balance
+-- Recalcula o saldo de uma conta específica
+-- -----------------------------------------------------
+CREATE OR REPLACE FUNCTION recalculate_account_balance(p_account_id UUID)
+RETURNS void AS $$
+BEGIN
+  UPDATE accounts
+  SET 
+    current_balance = initial_balance + COALESCE((
+      SELECT SUM(
+        CASE 
+          WHEN t.type = 'income' THEN t.amount 
+          ELSE -t.amount 
+        END
+      )
+      FROM transactions t
+      JOIN account_transactions at ON t.id = at.transaction_id
+      WHERE at.account_id = p_account_id
+        AND t.status = 'paid'
+    ), 0),
+    updated_at = NOW()
+  WHERE id = p_account_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -285,15 +418,29 @@ $$ LANGUAGE plpgsql;
 -- =====================================================
 
 -- -----------------------------------------------------
--- Trigger: Atualizar saldo da conta quando transação muda
+-- Trigger: Atualizar saldo da conta quando account_transactions muda
+-- IMPORTANTE: Triggers em account_transactions ao invés de transactions
+-- para capturar account_id ANTES do CASCADE
 -- -----------------------------------------------------
-CREATE TRIGGER trigger_update_account_balance_on_insert
-  AFTER INSERT ON transactions
+CREATE TRIGGER trigger_update_balance_on_account_transaction_insert
+  AFTER INSERT ON account_transactions
   FOR EACH ROW
-  WHEN (NEW.status = 'paid')
-  EXECUTE FUNCTION update_account_balance();
+  EXECUTE FUNCTION update_account_balance_from_account_transactions();
 
-CREATE TRIGGER trigger_update_account_balance_on_update
+CREATE TRIGGER trigger_update_balance_on_account_transaction_delete
+  BEFORE DELETE ON account_transactions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_account_balance_from_account_transactions();
+
+CREATE TRIGGER trigger_update_balance_on_account_transaction_update
+  AFTER UPDATE ON account_transactions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_account_balance_from_account_transactions();
+
+-- -----------------------------------------------------
+-- Trigger: Atualizar saldo quando transação muda (status, valor, tipo)
+-- -----------------------------------------------------
+CREATE TRIGGER trigger_update_balance_on_transaction_change
   AFTER UPDATE ON transactions
   FOR EACH ROW
   WHEN (
@@ -301,13 +448,7 @@ CREATE TRIGGER trigger_update_account_balance_on_update
     (OLD.amount != NEW.amount) OR 
     (OLD.type != NEW.type)
   )
-  EXECUTE FUNCTION update_account_balance();
-
-CREATE TRIGGER trigger_update_account_balance_on_delete
-  AFTER DELETE ON transactions
-  FOR EACH ROW
-  WHEN (OLD.status = 'paid')
-  EXECUTE FUNCTION update_account_balance();
+  EXECUTE FUNCTION update_account_balance_on_transaction_change();
 
 -- -----------------------------------------------------
 -- Trigger: Atualizar updated_at automaticamente

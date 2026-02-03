@@ -4,6 +4,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Accounts from "./pages/Accounts";
 import Bills from "./pages/Bills";
+import Budgets from "./pages/Budgets";
 import Categories from "./pages/Categories";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -38,10 +39,7 @@ function App() {
                     <Route path="/transactions" element={<Transactions />} />
                     <Route path="/bills" element={<Bills />} />
                     <Route path="/categories" element={<Categories />} />
-                    <Route
-                      path="/budgets"
-                      element={<div>Orçamentos - Em construção</div>}
-                    />
+                    <Route path="/budgets" element={<Budgets />} />
                     <Route path="/accounts" element={<Accounts />} />
                     <Route
                       path="*"

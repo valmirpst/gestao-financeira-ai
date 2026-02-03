@@ -11,9 +11,19 @@ import {
 } from "@/components/ui/tooltip";
 import { useActiveAccounts } from "@/hooks/useAccounts";
 import { formatCurrency } from "@/lib/utils";
+import { recalculateAllBalances } from "@/services/accounts.service";
 import { AccountWithProjection } from "@/types/database.types";
-import { Archive, ArrowLeftRight, Edit, HelpCircle, Plus } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Archive,
+  ArrowLeftRight,
+  Edit,
+  HelpCircle,
+  Plus,
+  RefreshCw,
+} from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const ACCOUNT_TYPE_LABELS: Record<string, string> = {
   checking: "Corrente",
@@ -24,11 +34,29 @@ const ACCOUNT_TYPE_LABELS: Record<string, string> = {
 };
 
 export default function Accounts() {
+  const queryClient = useQueryClient();
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [transferDialogOpen, setTransferDialogOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<
     AccountWithProjection | undefined
   >(undefined);
+
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Função manual para sincronizar saldos
+  const handleSyncBalances = async () => {
+    setIsSyncing(true);
+    try {
+      await recalculateAllBalances();
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      toast.success("Saldos sincronizados com sucesso!");
+    } catch (error) {
+      console.error("Sync error:", error);
+      toast.error("Erro ao sincronizar saldos.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Fetch data
   const { data: accounts = [], isLoading } = useActiveAccounts();
@@ -154,6 +182,17 @@ export default function Accounts() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleSyncBalances}
+            disabled={isSyncing}
+            className="hidden sm:flex"
+          >
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${isSyncing ? "animate-spin" : ""}`}
+            />
+            {isSyncing ? "Sincronizando..." : "Sincronizar"}
+          </Button>
           <Button variant="outline" onClick={handleOpenTransferDialog}>
             <ArrowLeftRight className="mr-2 h-4 w-4" />
             Nova Transferência

@@ -49,6 +49,7 @@ export function useCreateAccount() {
     mutationFn: accountsService.createAccount,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao criar conta");
@@ -66,6 +67,7 @@ export function useUpdateAccount() {
     mutationFn: ({ id, updates }) => accountsService.updateAccount(id, updates),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["account", variables.id] });
     },
     onError: (error) => {
@@ -84,6 +86,8 @@ export function useDeleteAccount() {
     mutationFn: accountsService.deleteAccount,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao arquivar conta");
@@ -131,6 +135,7 @@ export function useCreateTransfer() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao criar transferência");

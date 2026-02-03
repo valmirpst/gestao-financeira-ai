@@ -120,7 +120,10 @@ export type AccountTransactionInsert = Omit<
   AccountTransaction,
   "id" | "created_at"
 >;
-export type BudgetInsert = Omit<Budget, "id" | "created_at" | "updated_at">;
+export type BudgetInsert = Omit<
+  Budget,
+  "id" | "user_id" | "created_at" | "updated_at"
+>;
 
 // =====================================================
 // UPDATE TYPES (para atualizar registros)
@@ -167,6 +170,7 @@ export interface AccountWithProjection extends Account {
 export interface BudgetWithUsage extends Budget {
   spent: number;
   percentage: number;
+  days_remaining: number;
   category?: Category | null;
 }
 

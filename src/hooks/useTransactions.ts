@@ -54,6 +54,9 @@ export function useCreateTransaction() {
     mutationFn: transactionsService.createTransaction,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao criar transação");
@@ -76,6 +79,9 @@ export function useUpdateTransaction() {
       transactionsService.updateTransaction(id, updates),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({
         queryKey: ["transaction", variables.id],
       });
@@ -96,6 +102,9 @@ export function useDeleteTransaction() {
     mutationFn: transactionsService.deleteTransaction,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao deletar transação");
@@ -114,6 +123,9 @@ export function useMarkAsPaid() {
       transactionsService.markAsPaid(id, paymentDate),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao marcar transação como paga");

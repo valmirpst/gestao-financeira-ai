@@ -204,59 +204,79 @@ export async function deleteCategory(id: string): Promise<void> {
 /**
  * Cria categorias padrão do sistema
  */
-export async function createDefaultCategories(): Promise<void> {
+export async function createDefaultCategories(userId?: string): Promise<void> {
   try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    let targetUserId = userId;
 
-    if (!user) {
-      throw new Error("Usuário não autenticado");
+    if (!targetUserId) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error("Usuário não autenticado");
+      }
+      targetUserId = user.id;
     }
 
-    // Categorias de despesas
-    const expenseCategories = [
-      { name: "Alimentação", icon: "utensils", color: "#ef4444" },
-      { name: "Transporte", icon: "car", color: "#3b82f6" },
-      { name: "Moradia", icon: "home", color: "#8b5cf6" },
-      { name: "Saúde", icon: "heart", color: "#ec4899" },
-      { name: "Educação", icon: "book", color: "#06b6d4" },
-      { name: "Lazer", icon: "smile", color: "#f59e0b" },
-      { name: "Vestuário", icon: "shirt", color: "#10b981" },
-      { name: "Contas Fixas", icon: "file-text", color: "#6366f1" },
-      { name: "Outros", icon: "more-horizontal", color: "#64748b" },
-    ];
-
-    // Categorias de receitas
-    const incomeCategories = [
-      { name: "Salário", icon: "briefcase", color: "#22c55e" },
-      { name: "Investimentos", icon: "trending-up", color: "#14b8a6" },
-      { name: "Freelance", icon: "laptop", color: "#a855f7" },
-      { name: "Outros", icon: "more-horizontal", color: "#64748b" },
-    ];
-
-    // Inserir categorias de despesas
-    for (const category of expenseCategories) {
-      await createCategory({
-        user_id: user.id,
-        name: category.name,
+    const defaultCategories = [
+      // Despesas
+      {
+        name: "Alimentação",
         type: "expense",
-        color: category.color,
-        icon: category.icon,
-        parent_category_id: null,
-      });
-    }
+        icon: "utensils",
+        color: "#ef4444",
+      },
+      { name: "Transporte", type: "expense", icon: "car", color: "#3b82f6" },
+      { name: "Saúde", type: "expense", icon: "heart", color: "#ec4899" },
+      { name: "Educação", type: "expense", icon: "book", color: "#06b6d4" },
+      { name: "Lazer", type: "expense", icon: "smile", color: "#f59e0b" },
+      { name: "Vestuário", type: "expense", icon: "shirt", color: "#10b981" },
+      {
+        name: "Contas Fixas",
+        type: "expense",
+        icon: "file-text",
+        color: "#6366f1",
+      },
+      {
+        name: "Outros",
+        type: "expense",
+        icon: "more-horizontal",
+        color: "#64748b",
+      },
 
-    // Inserir categorias de receitas
-    for (const category of incomeCategories) {
-      await createCategory({
-        user_id: user.id,
-        name: category.name,
+      // Receitas
+      { name: "Salário", type: "income", icon: "briefcase", color: "#22c55e" },
+      {
+        name: "Investimentos",
         type: "income",
-        color: category.color,
-        icon: category.icon,
-        parent_category_id: null,
+        icon: "trending-up",
+        color: "#14b8a6",
+      },
+    ];
+
+    // Preparar todas as categorias para serem processadas
+    const categoriesToUpsert = defaultCategories.map((cat) => ({
+      user_id: targetUserId,
+      name: cat.name,
+      type: cat.type as "expense" | "income" | "both",
+      color: cat.color,
+      icon: cat.icon,
+      parent_category_id: null,
+    }));
+
+    // Usar upsert com ignoreDuplicates para evitar erros se a categoria já existir.
+    // O Supabase usará a constraint 'unique_category_name_per_user' (definida no banco)
+    // para identificar duplicatas e ignorá-las silenciosamente.
+    const { error } = await supabase
+      .from("categories")
+      .upsert(categoriesToUpsert, {
+        onConflict: "user_id, name",
+        ignoreDuplicates: true,
       });
+
+    if (error) {
+      throw new Error(`Erro ao criar categorias padrão: ${error.message}`);
     }
   } catch (error) {
     console.error("createDefaultCategories error:", error);

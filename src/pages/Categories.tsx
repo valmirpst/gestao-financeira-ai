@@ -84,7 +84,7 @@ export default function Categories() {
   };
 
   const handleCreateDefaultCategories = async () => {
-    await createDefaultCategories();
+    await createDefaultCategories(undefined);
   };
 
   // Render category item

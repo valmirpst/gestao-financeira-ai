@@ -39,6 +39,7 @@ export function useCreateCategory() {
     mutationFn: categoriesService.createCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao criar categoria");
@@ -57,6 +58,9 @@ export function useUpdateCategory() {
       categoriesService.updateCategory(id, updates),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
       queryClient.invalidateQueries({ queryKey: ["category", variables.id] });
     },
     onError: (error) => {
@@ -75,6 +79,9 @@ export function useDeleteCategory() {
     mutationFn: categoriesService.deleteCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao deletar categoria");
@@ -89,9 +96,10 @@ export function useCreateDefaultCategories() {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, void>({
-    mutationFn: categoriesService.createDefaultCategories,
+    mutationFn: () => categoriesService.createDefaultCategories(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao criar categorias padrão");

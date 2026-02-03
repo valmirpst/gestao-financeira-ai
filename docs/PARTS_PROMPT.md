@@ -384,7 +384,7 @@ Integrar na listagem de Bills e Transactions. -->
 
 ### ✅ Checkpoint: Verifique alertas e vencimentos no Dashboard
 
-Crie o service de orçamentos em /src/services/budgets.service.ts:
+<!-- Crie o service de orçamentos em /src/services/budgets.service.ts:
 
 Funções:
 
@@ -395,11 +395,11 @@ Funções:
 - deleteBudget(id)
 - getBudgetUsage(budgetId) - calcular spent, percentage, days_remaining
 
-Cálculo conforme PRD (apenas transações paid).
+Cálculo conforme PRD (apenas transações paid). -->
 
 ###
 
-Crie a página /src/pages/Budgets.tsx:
+<!-- Crie a página /src/pages/Budgets.tsx:
 
 1. Lista de orçamentos ativos
 2. Para cada orçamento:
@@ -423,7 +423,7 @@ Crie a página /src/pages/Budgets.tsx:
 5. Alert se orçamento excedido
 
 Use shadcn Progress para barra de progresso.
-Validar para não permitir sobreposição de períodos.
+Validar para não permitir sobreposição de períodos. -->
 
 ###
 

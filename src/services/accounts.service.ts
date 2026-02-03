@@ -475,3 +475,38 @@ async function calculateProjectedBalance(accountId: string): Promise<number> {
     return 0;
   }
 }
+/**
+ * Força o recálculo do saldo de uma conta específica
+ */
+export async function recalculateAccountBalance(
+  accountId: string,
+): Promise<void> {
+  try {
+    const { error } = await supabase.rpc("recalculate_account_balance", {
+      p_account_id: accountId,
+    });
+
+    if (error) {
+      throw new Error(`Erro ao recalcular saldo: ${error.message}`);
+    }
+  } catch (error) {
+    console.error("recalculateAccountBalance error:", error);
+    throw error;
+  }
+}
+
+/**
+ * Força o recálculo de TODAS as contas
+ */
+export async function recalculateAllBalances(): Promise<void> {
+  try {
+    const { error } = await supabase.rpc("recalculate_all_account_balances");
+
+    if (error) {
+      throw new Error(`Erro ao recalcular saldos: ${error.message}`);
+    }
+  } catch (error) {
+    console.error("recalculateAllBalances error:", error);
+    throw error;
+  }
+}
