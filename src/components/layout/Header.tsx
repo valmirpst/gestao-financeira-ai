@@ -10,14 +10,13 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigationLinks } from "@/hooks/useNavigationLinks";
 import { LogOut, User } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 export function Header() {
   const location = useLocation();
   const navigation = useNavigationLinks();
   const { user, signOut } = useAuth();
-  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -26,7 +25,7 @@ export function Header() {
       return;
     }
     toast.success("Logout realizado com sucesso!");
-    navigate("/login");
+    window.location.replace("/login");
   };
 
   // Get user initials for avatar
