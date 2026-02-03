@@ -29,7 +29,7 @@ export async function getTransactions(
         `
         *,
         category:categories(*),
-        account:account_transactions(account:accounts(*))
+        account_transactions(account:accounts(*))
       `,
       )
       .order("date", { ascending: false });
@@ -84,7 +84,17 @@ export async function getTransactions(
       throw new Error(`Erro ao buscar transações: ${error.message}`);
     }
 
-    return data || [];
+    // Transform account_transactions array to single account object
+    const transformedData = (data || []).map((transaction: any) => {
+      const accountTransactions = transaction.account_transactions;
+      return {
+        ...transaction,
+        account: accountTransactions?.[0]?.account || null,
+        account_transactions: undefined, // Remove the intermediate table data
+      };
+    });
+
+    return transformedData;
   } catch (error) {
     console.error("getTransactions error:", error);
     throw error;
@@ -173,8 +183,8 @@ export async function createTransaction(
       throw new Error("Erro ao criar transação");
     }
 
-    // Se account_id foi fornecido, criar a relação na tabela account_transactions
-    if (account_id) {
+    // Se account_id foi fornecido e não é vazio, criar a relação na tabela account_transactions
+    if (account_id && account_id !== "") {
       const { error: accountTransactionError } = await supabase
         .from("account_transactions")
         .insert({
@@ -240,8 +250,8 @@ export async function updateTransaction(
       throw new Error("Transação não encontrada");
     }
 
-    // Se account_id foi fornecido, atualizar a relação na tabela account_transactions
-    if (account_id !== undefined) {
+    // Se account_id foi fornecido e não é vazio, atualizar a relação na tabela account_transactions
+    if (account_id !== undefined && account_id !== "") {
       // Primeiro, deletar a relação existente
       await supabase
         .from("account_transactions")
@@ -323,7 +333,7 @@ export async function getRecentTransactions(
         `
         *,
         category:categories(*),
-        account:account_transactions(account:accounts(*))
+        account_transactions(account:accounts(*))
       `,
       )
       .order("created_at", { ascending: false })
@@ -333,7 +343,17 @@ export async function getRecentTransactions(
       throw new Error(`Erro ao buscar transações recentes: ${error.message}`);
     }
 
-    return data || [];
+    // Transform account_transactions array to single account object
+    const transformedData = (data || []).map((transaction: any) => {
+      const accountTransactions = transaction.account_transactions;
+      return {
+        ...transaction,
+        account: accountTransactions?.[0]?.account || null,
+        account_transactions: undefined, // Remove the intermediate table data
+      };
+    });
+
+    return transformedData;
   } catch (error) {
     console.error("getRecentTransactions error:", error);
     throw error;

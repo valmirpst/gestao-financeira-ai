@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useMarkAsPaid } from "@/hooks/useTransactions";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, formatDateSafe } from "@/lib/utils";
 import type { Transaction } from "@/types/database.types";
 import { differenceInDays, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -117,9 +117,7 @@ export function MarkAsPaidDialog({
                 </label>
                 <p className="text-base font-medium">
                   {transaction.due_date
-                    ? format(new Date(transaction.due_date), "dd/MM/yyyy", {
-                        locale: ptBR,
-                      })
+                    ? formatDateSafe(transaction.due_date)
                     : "-"}
                 </p>
               </div>

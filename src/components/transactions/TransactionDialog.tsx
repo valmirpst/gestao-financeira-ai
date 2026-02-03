@@ -10,14 +10,19 @@ import {
   useDeleteTransaction,
   useUpdateTransaction,
 } from "@/hooks/useTransactions";
-import type { Transaction, TransactionInsert } from "@/types/database.types";
+import { parseDateSafe } from "@/lib/utils";
+import type {
+  Transaction,
+  TransactionInsert,
+  TransactionWithRelations,
+} from "@/types/database.types";
 import { toast } from "sonner";
 import { TransactionForm } from "./TransactionForm";
 
 interface TransactionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  transaction?: Transaction;
+  transaction?: Transaction | TransactionWithRelations;
 }
 
 export function TransactionDialog({
@@ -77,24 +82,28 @@ export function TransactionDialog({
         amount: transaction.amount,
         description: transaction.description,
         category_id: transaction.category_id || undefined,
-        account_id: "", // Will be filled from account_transactions relation
+        // Extract account_id from account relation if available
+        account_id:
+          "account" in transaction && transaction.account
+            ? transaction.account.id
+            : "",
         // Map database status to form-compatible values
         // Form only accepts "paid" or "pending"
         status: (transaction.status === "paid" ? "paid" : "pending") as
           | "paid"
           | "pending",
         payment_date: transaction.payment_date
-          ? new Date(transaction.payment_date)
+          ? parseDateSafe(transaction.payment_date)
           : undefined,
         due_date: transaction.due_date
-          ? new Date(transaction.due_date)
+          ? parseDateSafe(transaction.due_date)
           : undefined,
         tags: transaction.tags || [],
         is_recurring: transaction.is_recurring,
         recurrence_frequency: transaction.recurrence_config?.frequency,
         recurrence_interval: transaction.recurrence_config?.interval,
         recurrence_end_date: transaction.recurrence_config?.end_date
-          ? new Date(transaction.recurrence_config.end_date)
+          ? parseDateSafe(transaction.recurrence_config.end_date)
           : undefined,
       }
     : undefined;

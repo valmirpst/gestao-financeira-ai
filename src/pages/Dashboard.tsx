@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTransactions } from "@/hooks/useTransactions";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDateSafe } from "@/lib/utils";
 import type { Transaction } from "@/types/database.types";
 import {
   addDays,
@@ -31,7 +31,6 @@ import {
   startOfYear,
   subMonths,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import {
   AlertCircle,
   ArrowDownCircle,
@@ -527,11 +526,7 @@ export default function Dashboard() {
                         {formatCurrency(bill.amount)}
                       </TableCell>
                       <TableCell>
-                        {bill.due_date
-                          ? format(new Date(bill.due_date), "dd/MM/yyyy", {
-                              locale: ptBR,
-                            })
-                          : "-"}
+                        {bill.due_date ? formatDateSafe(bill.due_date) : "-"}
                       </TableCell>
                       <TableCell>
                         {daysInfo && (

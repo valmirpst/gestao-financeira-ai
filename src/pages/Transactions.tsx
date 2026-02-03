@@ -27,7 +27,7 @@ import {
 import { useActiveAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
 import { useDeleteTransaction, useTransactions } from "@/hooks/useTransactions";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, formatDateSafe } from "@/lib/utils";
 import type { TransactionStatus, TransactionType } from "@/types";
 import type {
   Transaction,
@@ -184,6 +184,8 @@ export default function Transactions() {
     search !== "" ||
     dateRange.from !== undefined ||
     dateRange.to !== undefined;
+
+  console.log(allTransactions);
 
   // Get account name from transaction
   const getAccountName = (transaction: TransactionWithRelations) => {
@@ -413,16 +415,10 @@ export default function Transactions() {
             ) : (
               paginatedTransactions.map((transaction) => (
                 <TableRow key={transaction.id}>
-                  <TableCell>
-                    {format(new Date(transaction.date), "dd/MM/yyyy", {
-                      locale: ptBR,
-                    })}
-                  </TableCell>
+                  <TableCell>{formatDateSafe(transaction.date)}</TableCell>
                   <TableCell>
                     {transaction.due_date
-                      ? format(new Date(transaction.due_date), "dd/MM/yyyy", {
-                          locale: ptBR,
-                        })
+                      ? formatDateSafe(transaction.due_date)
                       : "-"}
                   </TableCell>
                   <TableCell className="font-medium">
