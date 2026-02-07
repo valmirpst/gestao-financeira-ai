@@ -427,6 +427,9 @@ Validar para não permitir sobreposição de períodos. -->
 
 ###
 
+<!-- Agora, vamos melhorar o dashboard. Não tendo a ver diretamente com os budgets.
+Logo, siga este prompt:
+
 Adicione gráficos ao Dashboard usando Recharts:
 
 1. Gráfico de Linha (Evolução Mensal):
@@ -439,7 +442,7 @@ Adicione gráficos ao Dashboard usando Recharts:
 Criar componente /src/components/dashboard/MonthlyEvolutionChart.tsx
 
 Use LineChart do recharts.
-Responsivo.
+Responsivo. -->
 
 ###
 

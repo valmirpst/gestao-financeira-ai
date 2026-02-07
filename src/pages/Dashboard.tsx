@@ -1,4 +1,5 @@
 import { MarkAsPaidDialog } from "@/components/bills/MarkAsPaidDialog";
+import { MonthlyEvolutionChart } from "@/components/dashboard/MonthlyEvolutionChart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -403,6 +404,11 @@ export default function Dashboard() {
             </p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Gráfico de Evolução Mensal */}
+      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-4">
+        <MonthlyEvolutionChart />
       </div>
 
       {/* Cards de Alerta - Contas a Pagar/Receber */}
