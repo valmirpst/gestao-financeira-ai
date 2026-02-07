@@ -606,6 +606,9 @@ CREATE POLICY "Users can delete their own budgets"
 -- 7. AGENDAMENTO DE JOBS (pg_cron)
 -- =====================================================
 
+-- Habilitar pg_cron
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
 -- -----------------------------------------------------
 -- Job: Marcar transações vencidas diariamente às 00:00
 -- -----------------------------------------------------
@@ -613,6 +616,92 @@ SELECT cron.schedule(
   'mark-overdue-transactions-daily',
   '0 0 * * *', -- Executa diariamente à meia-noite
   $$SELECT mark_overdue_transactions()$$
+);
+
+-- -----------------------------------------------------
+-- Função: Processar Recorrências
+-- -----------------------------------------------------
+CREATE OR REPLACE FUNCTION process_recurring_transactions()
+RETURNS void AS $$
+DECLARE
+  r RECORD;
+  next_run_date DATE;
+  new_next_run_date DATE;
+  new_transaction_id UUID;
+  v_frequency TEXT;
+  v_interval INT;
+BEGIN
+  -- Selecionar transações recorrentes agendadas para hoje ou antes
+  FOR r IN 
+    SELECT * FROM transactions 
+    WHERE is_recurring = TRUE 
+    AND (recurrence_config->>'next_run')::DATE <= CURRENT_DATE
+  LOOP
+    
+    v_frequency := r.recurrence_config->>'frequency';
+    v_interval := COALESCE((r.recurrence_config->>'interval')::INT, 1);
+    next_run_date := (r.recurrence_config->>'next_run')::DATE;
+    
+    -- Calcular PRÓXIMA data de execução (para atualizar a original)
+    CASE v_frequency
+      WHEN 'daily' THEN new_next_run_date := next_run_date + v_interval;
+      WHEN 'weekly' THEN new_next_run_date := next_run_date + (v_interval * 7);
+      WHEN 'monthly' THEN new_next_run_date := next_run_date + INTERVAL '1 month' * v_interval;
+      WHEN 'yearly' THEN new_next_run_date := next_run_date + INTERVAL '1 year' * v_interval;
+      ELSE new_next_run_date := NULL;
+    END CASE;
+
+    IF new_next_run_date IS NOT NULL THEN
+      -- Inserir nova transação (Filha)
+      INSERT INTO transactions (
+        user_id, type, amount, category_id, description, 
+        date, due_date, status, 
+        is_recurring, recurrence_config, 
+        tags, payment_date
+      ) VALUES (
+        r.user_id, r.type, r.amount, r.category_id, r.description,
+        -- Date (Competência): Será a data agendada (next_run_date)
+        next_run_date,
+        -- Due Date (Vencimento): Se pendente, é a data agendada. Se paga, nulo.
+        CASE WHEN r.status = 'pending' THEN next_run_date ELSE NULL END,
+        -- Status: Mantém o original
+        r.status, 
+        -- Is Recurring: Filha não é recorrente (falso)
+        FALSE, 
+        NULL, 
+        r.tags,
+        -- Payment Date: Se paga, é a data agendada.
+        CASE WHEN r.status = 'paid' THEN next_run_date ELSE NULL END
+      ) RETURNING id INTO new_transaction_id;
+      
+      -- Copiar vínculo com conta (account_transactions)
+      INSERT INTO account_transactions (account_id, transaction_id)
+      SELECT account_id, new_transaction_id
+      FROM account_transactions
+      WHERE transaction_id = r.id;
+
+      -- Atualizar a transação original com a NOVA próxima data
+      UPDATE transactions 
+      SET recurrence_config = jsonb_set(
+        recurrence_config, 
+        '{next_run}', 
+        to_jsonb(to_char(new_next_run_date, 'YYYY-MM-DD'))
+      ),
+      updated_at = NOW()
+      WHERE id = r.id;
+      
+    END IF;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- -----------------------------------------------------
+-- Job: Processar Recorrências diariamente às 03:00
+-- -----------------------------------------------------
+SELECT cron.schedule(
+  'process-recurring-transactions', 
+  '0 3 * * *', 
+  $$SELECT process_recurring_transactions()$$
 );
 
 -- =====================================================
