@@ -77,12 +77,14 @@ export function MonthlyEvolutionChart() {
               />
               <Tooltip
                 formatter={(value: number) => formatCurrency(value)}
-                labelStyle={{ color: "#333" }}
                 contentStyle={{
                   backgroundColor: "hsl(var(--popover))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "var(--radius)",
+                  borderColor: "hsl(var(--border))",
                   color: "hsl(var(--popover-foreground))",
+                  borderRadius: "var(--radius)",
+                }}
+                labelStyle={{
+                  color: "hsl(var(--muted-foreground))",
                 }}
               />
               <Legend />
