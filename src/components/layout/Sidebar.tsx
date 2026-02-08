@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { useNavigationLinks } from "@/hooks/useNavigationLinks";
 import { useTransactions } from "@/hooks/useTransactions";
-import { cn } from "@/lib/utils";
+import { cn, parseDateSafe } from "@/lib/utils";
 import { addDays, format, isPast } from "date-fns";
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -22,7 +22,7 @@ export function Sidebar() {
     return upcomingBills.filter(
       (t) =>
         (t.status === "overdue" ||
-          (t.due_date && isPast(new Date(t.due_date)))) &&
+          (t.due_date && isPast(parseDateSafe(t.due_date)))) &&
         t.status !== "paid",
     ).length;
   }, [upcomingBills]);

@@ -27,11 +27,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
 import { useTransactions } from "@/hooks/useTransactions";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, formatDateSafe, parseDateSafe } from "@/lib/utils";
 import type { Transaction, TransactionType } from "@/types/database.types";
 import {
   addDays,
   differenceInDays,
+  endOfMonth,
   format,
   isPast,
   startOfMonth,
@@ -48,7 +49,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 type StatusFilter = "all" | "pending" | "overdue";
-type PeriodFilter = "7days" | "30days" | "overdue" | "custom";
+type PeriodFilter = "this_month" | "30days" | "overdue" | "custom";
 
 export default function Bills() {
   const [searchParams] = useSearchParams();
@@ -59,7 +60,7 @@ export default function Bills() {
     initialTab === "income" ? "income" : "expense",
   );
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("30days");
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("this_month");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [accountFilter, setAccountFilter] = useState<string>("all");
   const [customDateRange, setCustomDateRange] = useState<{
@@ -81,10 +82,10 @@ export default function Bills() {
   const dateRange = useMemo(() => {
     const today = new Date();
     switch (periodFilter) {
-      case "7days":
+      case "this_month":
         return {
-          from: format(today, "yyyy-MM-dd"),
-          to: format(addDays(today, 7), "yyyy-MM-dd"),
+          from: format(startOfMonth(today), "yyyy-MM-dd"),
+          to: format(endOfMonth(today), "yyyy-MM-dd"),
         };
       case "30days":
         return {
@@ -129,20 +130,22 @@ export default function Bills() {
     if (statusFilter === "pending") {
       filtered = filtered.filter(
         (t) =>
-          t.status === "pending" && t.due_date && !isPast(new Date(t.due_date)),
+          t.status === "pending" &&
+          t.due_date &&
+          !isPast(parseDateSafe(t.due_date)),
       );
     } else if (statusFilter === "overdue") {
       filtered = filtered.filter(
         (t) =>
           t.status === "overdue" ||
-          (t.due_date && isPast(new Date(t.due_date))),
+          (t.due_date && isPast(parseDateSafe(t.due_date))),
       );
     }
 
     // Sort by due date
     return filtered.sort((a, b) => {
-      const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
-      const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
+      const dateA = a.due_date ? parseDateSafe(a.due_date).getTime() : 0;
+      const dateB = b.due_date ? parseDateSafe(b.due_date).getTime() : 0;
       return dateA - dateB;
     });
   }, [allTransactions, statusFilter]);
@@ -164,7 +167,7 @@ export default function Bills() {
       .filter(
         (t) =>
           t.status === "overdue" ||
-          (t.due_date && isPast(new Date(t.due_date))),
+          (t.due_date && isPast(parseDateSafe(t.due_date))),
       )
       .reduce((sum, t) => sum + t.amount, 0);
 
@@ -176,7 +179,7 @@ export default function Bills() {
       .filter(
         (t) =>
           t.status === "overdue" ||
-          (t.due_date && isPast(new Date(t.due_date))),
+          (t.due_date && isPast(parseDateSafe(t.due_date))),
       )
       .reduce((sum, t) => sum + t.amount, 0);
 
@@ -199,7 +202,7 @@ export default function Bills() {
     if (!dueDate) return null;
 
     const today = new Date();
-    const due = new Date(dueDate);
+    const due = parseDateSafe(dueDate);
     const days = differenceInDays(due, today);
 
     if (days < 0) {
@@ -344,7 +347,7 @@ export default function Bills() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="7days">Próximos 7 dias</SelectItem>
+                    <SelectItem value="this_month">Este mês</SelectItem>
                     <SelectItem value="30days">Próximos 30 dias</SelectItem>
                     <SelectItem value="overdue">Vencidas</SelectItem>
                     <SelectItem value="custom">Customizado</SelectItem>
@@ -534,11 +537,7 @@ export default function Bills() {
                           </TableCell>
                           <TableCell>
                             {transaction.due_date
-                              ? format(
-                                  new Date(transaction.due_date),
-                                  "dd/MM/yyyy",
-                                  { locale: ptBR },
-                                )
+                              ? formatDateSafe(transaction.due_date)
                               : "-"}
                           </TableCell>
                           <TableCell>
@@ -556,14 +555,14 @@ export default function Bills() {
                               variant={
                                 transaction.status === "overdue" ||
                                 (transaction.due_date &&
-                                  isPast(new Date(transaction.due_date)))
+                                  isPast(parseDateSafe(transaction.due_date)))
                                   ? "destructive"
                                   : "secondary"
                               }
                             >
                               {transaction.status === "overdue" ||
                               (transaction.due_date &&
-                                isPast(new Date(transaction.due_date)))
+                                isPast(parseDateSafe(transaction.due_date)))
                                 ? "Vencida"
                                 : "Pendente"}
                             </Badge>

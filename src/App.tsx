@@ -39,8 +39,8 @@ function App() {
                     <Route path="/transactions" element={<Transactions />} />
                     <Route path="/bills" element={<Bills />} />
                     <Route path="/categories" element={<Categories />} />
-                    <Route path="/budgets" element={<Budgets />} />
                     <Route path="/accounts" element={<Accounts />} />
+                    <Route path="/budgets" element={<Budgets />} />
                     <Route
                       path="*"
                       element={<Navigate to="/dashboard" replace />}

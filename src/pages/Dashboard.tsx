@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTransactions } from "@/hooks/useTransactions";
-import { formatCurrency, formatDateSafe } from "@/lib/utils";
+import { formatCurrency, formatDateSafe, parseDateSafe } from "@/lib/utils";
 import type { Transaction } from "@/types/database.types";
 import {
   addDays,
@@ -114,8 +114,8 @@ export default function Dashboard() {
     return upcomingBills
       .filter((t) => t.status === "pending" || t.status === "overdue")
       .sort((a, b) => {
-        const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
-        const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
+        const dateA = a.due_date ? parseDateSafe(a.due_date).getTime() : 0;
+        const dateB = b.due_date ? parseDateSafe(b.due_date).getTime() : 0;
         return dateA - dateB;
       })
       .slice(0, 5);
@@ -126,7 +126,7 @@ export default function Dashboard() {
     return upcomingBills.filter(
       (t) =>
         (t.status === "overdue" ||
-          (t.due_date && isPast(new Date(t.due_date)))) &&
+          (t.due_date && isPast(parseDateSafe(t.due_date)))) &&
         t.status !== "paid",
     ).length;
   }, [upcomingBills]);
@@ -146,7 +146,7 @@ export default function Dashboard() {
         (t) =>
           t.type === "expense" &&
           (t.status === "overdue" ||
-            (t.due_date && isPast(new Date(t.due_date)))),
+            (t.due_date && isPast(parseDateSafe(t.due_date)))),
       )
       .reduce((sum, t) => sum + t.amount, 0);
 
@@ -163,7 +163,7 @@ export default function Dashboard() {
         (t) =>
           t.type === "income" &&
           (t.status === "overdue" ||
-            (t.due_date && isPast(new Date(t.due_date)))),
+            (t.due_date && isPast(parseDateSafe(t.due_date)))),
       )
       .reduce((sum, t) => sum + t.amount, 0);
 
@@ -261,7 +261,7 @@ export default function Dashboard() {
     if (!dueDate) return null;
 
     const today = new Date();
-    const due = new Date(dueDate);
+    const due = parseDateSafe(dueDate);
     const days = differenceInDays(due, today);
 
     if (days < 0) {

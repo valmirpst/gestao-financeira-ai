@@ -79,10 +79,6 @@ CREATE TABLE transactions (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   
   -- Constraints
-  CONSTRAINT due_date_required_when_pending CHECK (
-    (status = 'pending' AND due_date IS NOT NULL) OR 
-    (status != 'pending')
-  ),
   CONSTRAINT payment_date_required_when_paid CHECK (
     (status = 'paid' AND payment_date IS NOT NULL) OR 
     (status != 'paid')
@@ -92,7 +88,9 @@ CREATE TABLE transactions (
     (is_recurring = FALSE)
   ),
   CONSTRAINT payment_date_not_future CHECK (
-    payment_date IS NULL OR payment_date <= CURRENT_DATE + INTERVAL '1 day'
+    payment_date IS NULL OR 
+    is_recurring = TRUE OR 
+    payment_date <= CURRENT_DATE + INTERVAL '1 day'
   )
 );
 

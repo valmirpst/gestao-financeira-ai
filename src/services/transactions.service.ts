@@ -152,12 +152,6 @@ export async function createTransaction(
       throw new Error("O valor deve ser maior que zero");
     }
 
-    if (data.status === "pending" && !data.due_date) {
-      throw new Error(
-        "Data de vencimento é obrigatória para transações pendentes",
-      );
-    }
-
     if (data.status === "paid" && !data.payment_date) {
       throw new Error("Data de pagamento é obrigatória para transações pagas");
     }
@@ -219,12 +213,6 @@ export async function updateTransaction(
     // Validações
     if (updates.amount !== undefined && updates.amount <= 0) {
       throw new Error("O valor deve ser maior que zero");
-    }
-
-    if (updates.status === "pending" && !updates.due_date) {
-      throw new Error(
-        "Data de vencimento é obrigatória para transações pendentes",
-      );
     }
 
     if (updates.status === "paid" && !updates.payment_date) {

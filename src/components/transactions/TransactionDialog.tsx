@@ -38,6 +38,7 @@ export function TransactionDialog({
   const deleteMutation = useDeleteTransaction();
 
   const handleSubmit = async (data: TransactionInsert) => {
+    console.log(data);
     try {
       if (isEditing) {
         await updateMutation.mutateAsync({
@@ -51,9 +52,7 @@ export function TransactionDialog({
       }
       onOpenChange(false);
     } catch (error) {
-      toast.error(
-        isEditing ? "Erro ao atualizar transação" : "Erro ao criar transação",
-      );
+      console.error("Error saving transaction:", error);
     }
   };
 
@@ -94,14 +93,16 @@ export function TransactionDialog({
           | "pending",
         payment_date: transaction.payment_date
           ? parseDateSafe(transaction.payment_date)
-          : undefined,
+          : transaction.is_recurring
+            ? parseDateSafe(transaction.date)
+            : undefined,
         due_date: transaction.due_date
           ? parseDateSafe(transaction.due_date)
           : undefined,
         tags: transaction.tags || [],
         is_recurring: transaction.is_recurring,
         recurrence_frequency: transaction.recurrence_config?.frequency,
-        recurrence_interval: transaction.recurrence_config?.interval,
+        recurrence_interval: transaction.recurrence_config?.interval || 1,
         recurrence_end_date: transaction.recurrence_config?.end_date
           ? parseDateSafe(transaction.recurrence_config.end_date)
           : undefined,
@@ -113,12 +114,12 @@ export function TransactionDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? "Editar Transação" : "Nova Transação"}
+            {isEditing ? "Editar Transação" : "Criar Nova Transação"}
           </DialogTitle>
           <DialogDescription>
             {isEditing
-              ? "Atualize as informações da transação abaixo."
-              : "Preencha os dados para criar uma nova transação."}
+              ? "Faça as alterações necessárias nos campos abaixo."
+              : "Preencha as informações para registrar uma entrada ou saída de dinheiro."}
           </DialogDescription>
         </DialogHeader>
 

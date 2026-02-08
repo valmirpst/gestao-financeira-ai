@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useMarkAsPaid } from "@/hooks/useTransactions";
-import { cn, formatCurrency, formatDateSafe } from "@/lib/utils";
+import { cn, formatCurrency, formatDateSafe, parseDateSafe } from "@/lib/utils";
 import type { Transaction } from "@/types/database.types";
 import { differenceInDays, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -40,13 +40,13 @@ export function MarkAsPaidDialog({
 
   // Calculate days overdue
   const daysOverdue = transaction.due_date
-    ? differenceInDays(new Date(), new Date(transaction.due_date))
+    ? differenceInDays(new Date(), parseDateSafe(transaction.due_date))
     : 0;
   const isOverdue = daysOverdue > 0;
 
   // Calculate days late for payment
   const daysLate = transaction.due_date
-    ? differenceInDays(paymentDate, new Date(transaction.due_date))
+    ? differenceInDays(paymentDate, parseDateSafe(transaction.due_date))
     : 0;
   const isPaidLate = daysLate > 0;
 

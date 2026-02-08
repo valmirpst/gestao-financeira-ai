@@ -33,9 +33,11 @@ import type {
   Transaction,
   TransactionWithRelations,
 } from "@/types/database.types";
-import { format } from "date-fns";
+import { endOfMonth, format, startOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
+  ArrowDown,
+  ArrowUp,
   CalendarIcon,
   CheckCircle2,
   ChevronLeft,
@@ -85,9 +87,26 @@ export default function Transactions() {
     from: Date | undefined;
     to: Date | undefined;
   }>({
-    from: undefined,
-    to: undefined,
+    from: startOfMonth(new Date()),
+    to: endOfMonth(new Date()),
   });
+
+  // Sort state
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof Transaction | null;
+    direction: "asc" | "desc";
+  }>({
+    key: "date",
+    direction: "desc",
+  });
+
+  const handleSort = (key: keyof Transaction) => {
+    setSortConfig((current) => ({
+      key,
+      direction:
+        current.key === key && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
 
   // Mark as paid dialog state
   const [markAsPaidDialogOpen, setMarkAsPaidDialogOpen] = useState(false);
@@ -116,9 +135,21 @@ export default function Transactions() {
   const deleteMutation = useDeleteTransaction();
 
   // Filter transactions by search (client-side for description)
+  // Filter and sort transactions (client-side)
   const filteredTransactions = useMemo(() => {
-    return allTransactions;
-  }, [allTransactions]);
+    return [...allTransactions].sort((a, b) => {
+      const key = sortConfig.key || "date";
+      const aValue = a[key];
+      const bValue = b[key];
+
+      if (aValue === bValue) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      const comparison = aValue < bValue ? -1 : 1;
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
+  }, [allTransactions, sortConfig]);
 
   // Calculate totals for the filtered period
   const totals = useMemo(() => {
@@ -130,10 +161,15 @@ export default function Transactions() {
       .filter((t) => t.type === "expense")
       .reduce((sum, t) => sum + t.amount, 0);
 
+    const paidExpense = filteredTransactions
+      .filter((t) => t.type === "expense" && t.status === "paid")
+      .reduce((sum, t) => sum + t.amount, 0);
+
     return {
       income,
       expense,
-      balance: income - expense,
+      paidExpense,
+      balance: income - paidExpense,
     };
   }, [filteredTransactions]);
 
@@ -241,22 +277,40 @@ export default function Transactions() {
           <p className="text-sm font-medium text-muted-foreground">
             Total de Saídas
           </p>
-          <p className="mt-2 text-2xl font-bold text-red-600">
-            {formatCurrency(totals.expense)}
-          </p>
+          <div className="flex items-baseline flex-col gap-1">
+            <p className="mt-2 text-2xl font-bold text-red-600">
+              {formatCurrency(totals.paidExpense)}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              A ser pago:{" "}
+              <span className="text-red-600">
+                {formatCurrency(totals.expense - totals.paidExpense)}
+              </span>
+            </p>
+          </div>
         </div>
         <div className="rounded-lg border bg-card p-4">
           <p className="text-sm font-medium text-muted-foreground">
             Saldo do Período
           </p>
-          <p
-            className={cn(
-              "mt-2 text-2xl font-bold",
-              totals.balance >= 0 ? "text-green-600" : "text-red-600",
-            )}
-          >
-            {formatCurrency(totals.balance)}
-          </p>
+          <div className="flex items-baseline flex-col gap-1">
+            <p
+              className={cn(
+                "mt-2 text-2xl font-bold",
+                totals.balance >= 0 ? "text-green-600" : "text-red-600",
+              )}
+            >
+              {formatCurrency(totals.balance)}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Considerando despesas a pagar:{" "}
+              <span className="text-red-600">
+                {formatCurrency(
+                  totals.balance - (totals.expense - totals.paidExpense),
+                )}
+              </span>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -395,8 +449,24 @@ export default function Transactions() {
               <TableHead>Categoria</TableHead>
               <TableHead>Conta</TableHead>
               <TableHead className="text-right">Valor</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+              <TableHead>
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("status")}
+                  className="flex items-center gap-1 p-0 hover:bg-transparent font-semibold w-full justify-center"
+                >
+                  Status
+                  {sortConfig.key === "status" &&
+                    (sortConfig.direction === "asc" ? (
+                      <ArrowUp className="h-2 w-2" />
+                    ) : (
+                      <ArrowDown className="h-2 w-2" />
+                    ))}
+                </Button>
+              </TableHead>
+              <TableHead className="text-center wmin-w-max -20">
+                Ações
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -414,7 +484,13 @@ export default function Transactions() {
               </TableRow>
             ) : (
               paginatedTransactions.map((transaction) => (
-                <TableRow key={transaction.id}>
+                <TableRow
+                  key={transaction.id}
+                  className={cn(
+                    transaction.status === "paid" &&
+                      "opacity-60 hover:opacity-100 transition-opacity",
+                  )}
+                >
                   <TableCell>{formatDateSafe(transaction.date)}</TableCell>
                   <TableCell>
                     {transaction.due_date
@@ -454,13 +530,13 @@ export default function Transactions() {
                     {transaction.type === "income" ? "+" : "-"}
                     {formatCurrency(transaction.amount)}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <Badge variant={statusVariants[transaction.status]}>
                       {statusLabels[transaction.status]}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-2 text-right wmin-w-max -20">
                       {transaction.status === "pending" && (
                         <Button
                           variant="ghost"
