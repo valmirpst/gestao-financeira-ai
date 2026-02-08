@@ -1,8 +1,19 @@
 import { MarkAsPaidDialog } from "@/components/bills/MarkAsPaidDialog";
 import { TransactionDialog } from "@/components/transactions/TransactionDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -16,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -26,7 +38,11 @@ import {
 } from "@/components/ui/table";
 import { useActiveAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
-import { useDeleteTransaction, useTransactions } from "@/hooks/useTransactions";
+import {
+  useCreateTransaction,
+  useDeleteTransaction,
+  useTransactions,
+} from "@/hooks/useTransactions";
 import { cn, formatCurrency, formatDateSafe } from "@/lib/utils";
 import type { TransactionStatus, TransactionType } from "@/types";
 import type {
@@ -44,6 +60,7 @@ import {
   ChevronRight,
   Edit,
   Plus,
+  Receipt,
   Search,
   Trash2,
   X,
@@ -133,6 +150,7 @@ export default function Transactions() {
 
   // Mutations
   const deleteMutation = useDeleteTransaction();
+  const createMutation = useCreateTransaction();
 
   // Filter transactions by search (client-side for description)
   // Filter and sort transactions (client-side)
@@ -186,15 +204,63 @@ export default function Transactions() {
     setCurrentPage(1);
   }, [type, status, categoryId, accountId, search, dateRange]);
 
+  // Delete confirmation state
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<Transaction | null>(null);
+
+  // Old transaction warning state
+  const [oldTransactionToEdit, setOldTransactionToEdit] =
+    useState<Transaction | null>(null);
+
   // Handlers
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja deletar esta transação?")) return;
+  const handleDelete = (transaction: Transaction) => {
+    setTransactionToDelete(transaction);
+  };
+
+  const confirmDelete = async () => {
+    if (!transactionToDelete) return;
 
     try {
-      await deleteMutation.mutateAsync(id);
-      toast.success("Transação deletada com sucesso!");
+      await deleteMutation.mutateAsync(transactionToDelete.id);
+      toast.success("Transação deletada", {
+        description: "A transação foi removida com sucesso.",
+        action: {
+          label: "Desfazer",
+          onClick: () => {
+            const { id, created_at, updated_at, ...transactionData } =
+              transactionToDelete;
+            createMutation.mutate(transactionData);
+          },
+        },
+      });
     } catch (error) {
-      toast.error("Erro ao deletar transação");
+      toast.error("Erro ao deletar", {
+        description: "Não foi possível remover a transação. Tente novamente.",
+      });
+    } finally {
+      setTransactionToDelete(null);
+    }
+  };
+
+  const handleOpenEditDialog = (transaction: Transaction) => {
+    const today = new Date();
+    const transactionDate = new Date(transaction.date);
+    const diffTime = Math.abs(today.getTime() - transactionDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays > 90) {
+      setOldTransactionToEdit(transaction);
+    } else {
+      setSelectedTransaction(transaction);
+      setDialogOpen(true);
+    }
+  };
+
+  const confirmEditOldTransaction = () => {
+    if (oldTransactionToEdit) {
+      setSelectedTransaction(oldTransactionToEdit);
+      setDialogOpen(true);
+      setOldTransactionToEdit(null);
     }
   };
 
@@ -234,11 +300,6 @@ export default function Transactions() {
   // Dialog handlers
   const handleOpenCreateDialog = () => {
     setSelectedTransaction(undefined);
-    setDialogOpen(true);
-  };
-
-  const handleOpenEditDialog = (transaction: Transaction) => {
-    setSelectedTransaction(transaction);
     setDialogOpen(true);
   };
 
@@ -471,15 +532,60 @@ export default function Transactions() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={8} className="text-center">
-                  Carregando...
-                </TableCell>
-              </TableRow>
+              Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[100px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[100px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[200px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-[100px] rounded-full" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[150px]" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="ml-auto h-4 w-[100px]" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex justify-center">
+                      <Skeleton className="h-6 w-[80px] rounded-full" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-2">
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
             ) : paginatedTransactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center">
-                  Nenhuma transação encontrada
+                <TableCell colSpan={8} className="h-64 text-center">
+                  <EmptyState
+                    icon={Receipt}
+                    title="Nenhuma transação encontrada"
+                    description={
+                      hasActiveFilters
+                        ? "Tente ajustar os filtros para encontrar o que procura."
+                        : "Comece adicionando sua primeira transação financeira."
+                    }
+                    action={
+                      !hasActiveFilters && (
+                        <Button onClick={handleOpenCreateDialog}>
+                          <Plus className="mr-2 h-4 w-4" />
+                          Nova Transação
+                        </Button>
+                      )
+                    }
+                  />
                 </TableCell>
               </TableRow>
             ) : (
@@ -562,7 +668,7 @@ export default function Transactions() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(transaction.id)}
+                        onClick={() => handleDelete(transaction as Transaction)}
                         disabled={deleteMutation.isPending}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
@@ -654,6 +760,64 @@ export default function Transactions() {
         open={markAsPaidDialogOpen}
         onOpenChange={setMarkAsPaidDialogOpen}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!transactionToDelete}
+        onOpenChange={(open) => !open && setTransactionToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tem certeza que deseja deletar?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente a
+              transação de valor{" "}
+              <span className="font-semibold text-foreground">
+                {transactionToDelete &&
+                  formatCurrency(transactionToDelete.amount)}
+              </span>{" "}
+              do dia{" "}
+              <span className="font-semibold text-foreground">
+                {transactionToDelete &&
+                  formatDateSafe(transactionToDelete.date)}
+              </span>
+              .
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={confirmDelete}
+            >
+              Deletar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Old Transaction Warning Dialog */}
+      <AlertDialog
+        open={!!oldTransactionToEdit}
+        onOpenChange={(open) => !open && setOldTransactionToEdit(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Editar transação antiga</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você está prestes a editar uma transação criada há mais de 90
+              dias. Alterações em registros antigos podem afetar o histórico
+              financeiro e relatórios passados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmEditOldTransaction}>
+              Continuar Edição
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

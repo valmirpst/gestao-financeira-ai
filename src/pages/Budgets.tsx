@@ -3,6 +3,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Progress } from "@/components/ui/progress";
 import { useBudgets, useDeleteBudget } from "@/hooks/useBudgets";
 import { formatCurrency } from "@/lib/utils";
@@ -113,21 +114,17 @@ export default function Budgets() {
 
       {/* Empty State */}
       {!isLoading && budgets.length === 0 && (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <TrendingUp className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
-              Nenhum orçamento criado
-            </h3>
-            <p className="text-muted-foreground text-center mb-4">
-              Crie seu primeiro orçamento para começar a controlar seus gastos
-            </p>
+        <EmptyState
+          icon={TrendingUp}
+          title="Nenhum orçamento criado"
+          description="Crie seu primeiro orçamento para definir limites de gastos e acompanhar suas metas."
+          action={
             <Button onClick={handleNewBudget}>
               <Plus className="mr-2 h-4 w-4" />
               Criar Primeiro Orçamento
             </Button>
-          </CardContent>
-        </Card>
+          }
+        />
       )}
 
       {/* Budgets List */}

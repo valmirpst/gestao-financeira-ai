@@ -123,9 +123,9 @@ export default function Login() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={form.formState.isSubmitting}
+                loading={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? "Entrando..." : "Entrar"}
+                Entrar
               </Button>
             </form>
           </Form>

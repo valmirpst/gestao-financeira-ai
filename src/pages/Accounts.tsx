@@ -3,6 +3,7 @@ import { TransferDialog } from "@/components/accounts/TransferDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Tooltip,
   TooltipContent,
@@ -21,6 +22,7 @@ import {
   HelpCircle,
   Plus,
   RefreshCw,
+  Wallet,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -210,15 +212,17 @@ export default function Accounts() {
           <p className="text-muted-foreground">Carregando contas...</p>
         </div>
       ) : accounts.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">
-            Nenhuma conta cadastrada ainda
-          </p>
-          <Button onClick={handleOpenCreateDialog}>
-            <Plus className="mr-2 h-4 w-4" />
-            Criar Primeira Conta
-          </Button>
-        </div>
+        <EmptyState
+          icon={Wallet}
+          title="Nenhuma conta cadastrada"
+          description="Cadastre suas contas bancárias, carteiras ou investimentos para acompanhar seus saldos."
+          action={
+            <Button onClick={handleOpenCreateDialog}>
+              <Plus className="mr-2 h-4 w-4" />
+              Criar Primeira Conta
+            </Button>
+          }
+        />
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {accounts.map((account) => renderAccountCard(account))}

@@ -470,7 +470,7 @@ Use PieChart e BarChart do recharts.
 
 ### ✅ Checkpoint: Verifique todos os gráficos
 
-Implemente a lógica de transações recorrentes:
+<!-- Implemente a lógica de transações recorrentes:
 
 1. Function no Supabase (SQL):
    - create_recurring_transactions()
@@ -485,7 +485,7 @@ Implemente a lógica de transações recorrentes:
 3. Adicionar botão manual no UI (admin):
    - "Processar Recorrências" para teste
 
-Testar criando uma transação recorrente mensal.
+Testar criando uma transação recorrente mensal. -->
 
 ###
 
@@ -507,7 +507,7 @@ Usar shadcn Popover, Checkbox, Slider.
 
 ###
 
-Implemente melhorias de experiência:
+<!-- Implemente melhorias de experiência:
 
 1. Loading States:
    - Skeleton loader para listas
@@ -530,7 +530,7 @@ Implemente melhorias de experiência:
    - Sucesso, erro, info
    - Undo para deleções (opcional)
 
-Use shadcn Skeleton, AlertDialog, Toast.
+Use shadcn Skeleton, AlertDialog, Toast. -->
 
 ###
 

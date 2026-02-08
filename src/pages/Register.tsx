@@ -160,9 +160,9 @@ export default function Register() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={form.formState.isSubmitting}
+                loading={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? "Criando..." : "Criar Conta"}
+                Criar Conta
               </Button>
             </form>
           </Form>

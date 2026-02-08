@@ -2,6 +2,7 @@ import { CategoryDialog } from "@/components/categories/CategoryDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   useCategories,
   useCreateDefaultCategories,
@@ -10,7 +11,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { formatCurrency } from "@/lib/utils";
 import type { Category } from "@/types/database.types";
 import { endOfMonth, format, startOfMonth } from "date-fns";
-import { Edit, Loader2, Plus } from "lucide-react";
+import { Edit, Loader2, Plus, Tags } from "lucide-react";
 import { useMemo, useState } from "react";
 
 export default function Categories() {
@@ -176,22 +177,26 @@ export default function Categories() {
           <p className="text-muted-foreground">Carregando categorias...</p>
         </div>
       ) : categories.length === 0 ? (
-        <div className="text-center py-12 space-y-4">
-          <p className="text-muted-foreground">Nenhuma categoria cadastrada</p>
-          <Button onClick={handleCreateDefaultCategories}>
-            {isCreatingDefaultCategories ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Adicionando categorias...
-              </>
-            ) : (
-              <>
-                <Plus className="mr-2 h-4 w-4" />
-                Adicionar categorias padrão
-              </>
-            )}
-          </Button>
-        </div>
+        <EmptyState
+          icon={Tags}
+          title="Nenhuma categoria cadastrada"
+          description="Categorias ajudam a organizar suas transações. Você pode criar as suas ou usar nosso modelo padrão."
+          action={
+            <Button onClick={handleCreateDefaultCategories}>
+              {isCreatingDefaultCategories ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Adicionando categorias...
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Adicionar categorias padrão
+                </>
+              )}
+            </Button>
+          }
+        />
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
           {/* Expense Categories */}

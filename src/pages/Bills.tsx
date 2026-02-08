@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Popover,
   PopoverContent,
@@ -44,6 +45,7 @@ import {
   CheckCircle,
   Clock,
   DollarSign,
+  Receipt,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -487,11 +489,11 @@ export default function Bills() {
           <Card>
             <CardContent className="pt-6">
               {filteredTransactions.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">
-                    Nenhuma conta encontrada com os filtros selecionados
-                  </p>
-                </div>
+                <EmptyState
+                  icon={Receipt}
+                  title="Nenhuma conta encontrada"
+                  description="Não encontramos nenhuma conta com os filtros selecionados."
+                />
               ) : (
                 <Table>
                   <TableHeader>

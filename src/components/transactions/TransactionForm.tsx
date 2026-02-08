@@ -1002,14 +1002,10 @@ export function TransactionForm({
           <Button
             type="submit"
             className="flex-1"
-            disabled={isLoading}
+            loading={isLoading}
             size="lg"
           >
-            {isLoading
-              ? "Salvando..."
-              : isEditing
-                ? "Salvar Alterações"
-                : "Criar Transação"}
+            {isEditing ? "Salvar Alterações" : "Criar Transação"}
           </Button>
 
           {onCancel && (
