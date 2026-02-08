@@ -1,0 +1,16 @@
+{
+  "name": "Gestão Financeira",
+  "short_name": "Finanças",
+  "description": "App de gestão financeira pessoal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "500x500",
+      "type": "image/png"
+    }
+  ]
+}
