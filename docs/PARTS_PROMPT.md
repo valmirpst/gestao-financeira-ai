@@ -534,7 +534,7 @@ Use shadcn Skeleton, AlertDialog, Toast. -->
 
 ###
 
-Implemente tema claro/escuro:
+<!-- Implemente tema claro/escuro:
 
 1. Configurar Tailwind para dark mode (class strategy)
 2. Criar contexto ThemeProvider
@@ -542,7 +542,7 @@ Implemente tema claro/escuro:
 4. Salvar preferência no localStorage
 5. Ajustar cores de todos os componentes
 
-Testar todas as páginas em ambos os modos.
+Testar todas as páginas em ambos os modos. -->
 
 ###
 

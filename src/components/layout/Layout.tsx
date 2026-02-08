@@ -1,6 +1,8 @@
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 
+import { MobileNav } from "./MobileNav";
+
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -9,8 +11,9 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
+      <MobileNav />
 
-      <div className="pl-64">
+      <div className="pb-16 md:pb-0 md:pl-64">
         <Header />
 
         {/* Page content */}

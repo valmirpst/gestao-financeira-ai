@@ -28,7 +28,7 @@ export function Sidebar() {
   }, [upcomingBills]);
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-card border-r">
+    <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r bg-card md:flex">
       <div className="flex h-full flex-col">
         {/* Logo */}
         <div className="flex h-16 items-center border-b px-6">

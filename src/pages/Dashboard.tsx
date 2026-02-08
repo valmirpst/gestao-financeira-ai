@@ -317,7 +317,7 @@ export default function Dashboard() {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {/* Card 1: Total de Entradas */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -407,12 +407,12 @@ export default function Dashboard() {
       </div>
 
       {/* Gráfico de Evolução Mensal */}
-      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         <MonthlyEvolutionChart />
       </div>
 
       {/* Cards de Alerta - Contas a Pagar/Receber */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* A Pagar */}
         <Card
           className={`cursor-pointer transition-all hover:shadow-md ${
@@ -494,7 +494,7 @@ export default function Dashboard() {
               </p>
             </div>
           ) : (
-            <Table>
+            <Table className="min-w-[600px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Descrição</TableHead>
