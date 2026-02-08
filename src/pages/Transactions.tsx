@@ -1,4 +1,5 @@
 import { MarkAsPaidDialog } from "@/components/bills/MarkAsPaidDialog";
+import { TransactionCard } from "@/components/transactions/TransactionCard";
 import { TransactionDialog } from "@/components/transactions/TransactionDialog";
 import {
   AlertDialog,
@@ -52,8 +53,6 @@ import type {
 import { endOfMonth, format, startOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  ArrowDown,
-  ArrowUp,
   CalendarIcon,
   CheckCircle2,
   ChevronLeft,
@@ -499,35 +498,69 @@ export default function Transactions() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border bg-card">
+      {/* Desktop Table View */}
+      <div className="rounded-lg border bg-card hidden md:block">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Data</TableHead>
-              <TableHead>Vencimento</TableHead>
-              <TableHead>Descrição</TableHead>
+              <TableHead
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort("date")}
+              >
+                Data
+                {sortConfig.key === "date" && (
+                  <span className="ml-1">
+                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort("due_date")}
+              >
+                Vencimento
+                {sortConfig.key === "due_date" && (
+                  <span className="ml-1">
+                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort("description")}
+              >
+                Descrição
+                {sortConfig.key === "description" && (
+                  <span className="ml-1">
+                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </TableHead>
               <TableHead>Categoria</TableHead>
               <TableHead>Conta</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
-              <TableHead>
-                <Button
-                  variant="ghost"
-                  onClick={() => handleSort("status")}
-                  className="flex items-center gap-1 p-0 hover:bg-transparent font-semibold w-full justify-center"
-                >
-                  Status
-                  {sortConfig.key === "status" &&
-                    (sortConfig.direction === "asc" ? (
-                      <ArrowUp className="h-2 w-2" />
-                    ) : (
-                      <ArrowDown className="h-2 w-2" />
-                    ))}
-                </Button>
+              <TableHead
+                className="text-right cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort("amount")}
+              >
+                Valor
+                {sortConfig.key === "amount" && (
+                  <span className="ml-1">
+                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
               </TableHead>
-              <TableHead className="text-center wmin-w-max -20">
-                Ações
+              <TableHead
+                className="text-center cursor-pointer hover:bg-muted/50"
+                onClick={() => handleSort("status")}
+              >
+                Status
+                {sortConfig.key === "status" && (
+                  <span className="ml-1">
+                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
               </TableHead>
+              <TableHead className="text-center min-w-20">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -642,7 +675,7 @@ export default function Transactions() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex justify-end gap-2 text-right wmin-w-max -20">
+                    <div className="flex justify-end gap-2 text-right">
                       {transaction.status === "pending" && (
                         <Button
                           variant="ghost"
@@ -680,6 +713,63 @@ export default function Transactions() {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile ListView */}
+      <div className="md:hidden space-y-3">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="rounded-lg border bg-card p-4 space-y-3"
+            >
+              <div className="flex justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[150px]" />
+                  <Skeleton className="h-3 w-[100px]" />
+                </div>
+                <div className="space-y-2 flex flex-col items-end">
+                  <Skeleton className="h-4 w-[80px]" />
+                  <Skeleton className="h-5 w-[60px] rounded-full" />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : paginatedTransactions.length === 0 ? (
+          <div className="rounded-lg border bg-card p-8 text-center min-h-[300px] flex flex-col items-center justify-center">
+            <EmptyState
+              icon={Receipt}
+              title="Nenhuma transação encontrada"
+              description={
+                hasActiveFilters
+                  ? "Tente ajustar os filtros para encontrar o que procura."
+                  : "Comece adicionando sua primeira transação financeira."
+              }
+              action={
+                !hasActiveFilters && (
+                  <Button onClick={handleOpenCreateDialog}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Nova Transação
+                  </Button>
+                )
+              }
+            />
+          </div>
+        ) : (
+          paginatedTransactions.map((transaction) => (
+            <TransactionCard
+              key={transaction.id}
+              transaction={transaction}
+              statusLabels={statusLabels}
+              statusVariants={statusVariants}
+              getAccountName={getAccountName}
+              onEdit={handleOpenEditDialog}
+              onDelete={handleDelete}
+              onMarkAsPaid={handleOpenMarkAsPaidDialog}
+              isDeleting={deleteMutation.isPending}
+            />
+          ))
+        )}
       </div>
 
       {/* Pagination */}

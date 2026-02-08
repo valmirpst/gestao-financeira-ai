@@ -546,7 +546,7 @@ Testar todas as páginas em ambos os modos. -->
 
 ###
 
-Ajuste todos os componentes para mobile:
+<!-- Ajuste todos os componentes para mobile:
 
 1. Dashboard:
    - Cards em coluna única
@@ -565,7 +565,7 @@ Ajuste todos os componentes para mobile:
    - Card view em mobile ao invés de table
    - Swipe actions
 
-Testar em 320px, 375px, 768px, 1024px.
+Testar em 320px, 375px, 768px, 1024px. -->
 
 ###
 

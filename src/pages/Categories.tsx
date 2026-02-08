@@ -96,14 +96,15 @@ export default function Categories() {
     return (
       <div key={category.id}>
         <div
-          className={`flex items-center justify-between p-4 hover:bg-muted/50 rounded-lg transition-colors ${
-            isSubcategory ? "ml-8 bg-muted/20" : ""
+          className={`flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 hover:bg-muted/50 rounded-lg transition-colors ${
+            isSubcategory ? "ml-4 sm:ml-8 bg-muted/20" : ""
           }`}
         >
-          <div className="flex items-center gap-4 flex-1">
+          {/* Top row on mobile: Icon, Name, Badge */}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
             {/* Icon and Color */}
             <div
-              className="h-10 w-10 rounded-lg flex items-center justify-center"
+              className="h-10 w-10 shrink-0 rounded-lg flex items-center justify-center"
               style={{ backgroundColor: category.color + "20" }}
             >
               <div
@@ -113,10 +114,10 @@ export default function Categories() {
             </div>
 
             {/* Name and Type */}
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-medium">{category.name}</h3>
-                <Badge variant="outline" className="text-xs">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-medium truncate">{category.name}</h3>
+                <Badge variant="outline" className="text-xs shrink-0">
                   {category.type === "income"
                     ? "Entrada"
                     : category.type === "expense"
@@ -125,15 +126,18 @@ export default function Categories() {
                 </Badge>
               </div>
             </div>
+          </div>
 
+          {/* Bottom row on mobile: Total and Actions */}
+          <div className="flex items-center justify-between sm:justify-end gap-4">
             {/* Total */}
-            <div className="text-right">
+            <div className="text-left sm:text-right">
               <p className="font-semibold">{formatCurrency(total)}</p>
               <p className="text-xs text-muted-foreground">no mês</p>
             </div>
 
             {/* Actions */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
@@ -156,16 +160,18 @@ export default function Categories() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Categorias</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Categorias
+          </h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Organize suas transações por categorias
           </p>
         </div>
-        <Button onClick={handleOpenCreateDialog}>
+        <Button onClick={handleOpenCreateDialog} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Nova Categoria
         </Button>
@@ -198,16 +204,16 @@ export default function Categories() {
           }
         />
       ) : (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
           {/* Expense Categories */}
-          <Card>
+          <Card className="overflow-hidden">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <div className="h-2 w-2 rounded-full bg-red-500" />
                 Saídas
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 max-h-[60vh] overflow-y-auto">
               {categoriesByType.expense.filter((cat) => !cat.parent_category_id)
                 .length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">
@@ -222,14 +228,14 @@ export default function Categories() {
           </Card>
 
           {/* Income Categories */}
-          <Card>
+          <Card className="overflow-hidden">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <div className="h-2 w-2 rounded-full bg-green-500" />
                 Entradas
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 max-h-[60vh] overflow-y-auto">
               {categoriesByType.income.filter((cat) => !cat.parent_category_id)
                 .length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">

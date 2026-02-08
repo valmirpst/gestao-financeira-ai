@@ -11,6 +11,7 @@ import { useNavigationLinks } from "@/hooks/useNavigationLinks";
 import { useTransactions } from "@/hooks/useTransactions";
 import { cn, parseDateSafe } from "@/lib/utils";
 import { addDays, format, isPast } from "date-fns";
+import { motion } from "framer-motion";
 import { Menu } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -38,6 +39,21 @@ export function MobileNav() {
 
   // Main items for bottom bar (top 4 or specific ones)
   const bottomNavItems = navigation.slice(0, 4);
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariant = {
+    hidden: { opacity: 0, x: -20 },
+    show: { opacity: 1, x: 0 },
+  };
 
   return (
     <>
@@ -77,49 +93,57 @@ export function MobileNav() {
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="flex flex-col items-center justify-center gap-1 h-auto py-2 px-2 hover:bg-transparent"
+                variant="base"
+                size="none"
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition-colors",
+                  "text-muted-foreground hover:text-foreground",
+                  "[&_svg]:size-5",
+                )}
               >
-                <Menu className="h-5 w-5 text-muted-foreground" />
-                <span className="text-xs font-medium text-muted-foreground">
-                  Menu
-                </span>
+                <Menu className="h-5 w-5" />
+                <span>Menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[80vw] sm:w-[350px] p-0">
               <SheetHeader className="p-6 border-b">
                 <SheetTitle className="text-left">Gestão Financeira</SheetTitle>
               </SheetHeader>
-              <nav className="flex flex-col p-4 space-y-2">
+              <motion.nav
+                className="flex flex-col p-4 space-y-2"
+                variants={container}
+                initial="hidden"
+                animate="show"
+              >
                 {navigation.map((item) => {
                   const isActive = location.pathname === item.href;
                   const Icon = item.icon;
                   const showBadge = item.href === "/bills" && overdueCount > 0;
 
                   return (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      onClick={() => setOpen(false)}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors",
-                        isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                      )}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span className="flex-1">{item.name}</span>
-                      {showBadge && (
-                        <Badge variant="destructive" className="ml-auto">
-                          {overdueCount}
-                        </Badge>
-                      )}
-                    </Link>
+                    <motion.div key={item.name} variants={itemVariant}>
+                      <Link
+                        to={item.href}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors",
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                        )}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <span className="flex-1">{item.name}</span>
+                        {showBadge && (
+                          <Badge variant="destructive" className="ml-auto">
+                            {overdueCount}
+                          </Badge>
+                        )}
+                      </Link>
+                    </motion.div>
                   );
                 })}
-              </nav>
+              </motion.nav>
             </SheetContent>
           </Sheet>
         </nav>

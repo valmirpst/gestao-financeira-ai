@@ -1,4 +1,16 @@
 import { MarkAsPaidDialog } from "@/components/bills/MarkAsPaidDialog";
+import { TransactionCard } from "@/components/transactions/TransactionCard";
+import { TransactionDialog } from "@/components/transactions/TransactionDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -27,9 +39,17 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
-import { useTransactions } from "@/hooks/useTransactions";
+import {
+  useCreateTransaction,
+  useDeleteTransaction,
+  useTransactions,
+} from "@/hooks/useTransactions";
 import { cn, formatCurrency, formatDateSafe, parseDateSafe } from "@/lib/utils";
-import type { Transaction, TransactionType } from "@/types/database.types";
+import type { TransactionStatus } from "@/types";
+import type {
+  TransactionType,
+  TransactionWithRelations,
+} from "@/types/database.types";
 import {
   addDays,
   differenceInDays,
@@ -49,9 +69,27 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 type StatusFilter = "all" | "pending" | "overdue";
 type PeriodFilter = "this_month" | "30days" | "overdue" | "custom";
+
+const statusLabels: Record<TransactionStatus, string> = {
+  pending: "Pendente",
+  paid: "Pago",
+  overdue: "Vencido",
+  cancelled: "Cancelado",
+};
+
+const statusVariants: Record<
+  TransactionStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
+  pending: "secondary",
+  paid: "default",
+  overdue: "destructive",
+  cancelled: "outline",
+};
 
 export default function Bills() {
   const [searchParams] = useSearchParams();
@@ -73,12 +111,19 @@ export default function Bills() {
     to: undefined,
   });
   const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
+    useState<TransactionWithRelations | null>(null);
   const [markAsPaidDialogOpen, setMarkAsPaidDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<TransactionWithRelations | null>(null);
 
   // Fetch data
   const { data: categories = [] } = useCategories();
   const { data: accounts = [] } = useAccounts();
+
+  // Mutations
+  const deleteMutation = useDeleteTransaction();
+  const createMutation = useCreateTransaction();
 
   // Calculate date range based on period filter
   const dateRange = useMemo(() => {
@@ -194,9 +239,52 @@ export default function Bills() {
   }, [allTransactions]);
 
   // Handle mark as paid
-  const handleOpenMarkAsPaidDialog = (transaction: Transaction) => {
+  const handleOpenMarkAsPaidDialog = (
+    transaction: TransactionWithRelations,
+  ) => {
     setSelectedTransaction(transaction);
     setMarkAsPaidDialogOpen(true);
+  };
+
+  const handleEdit = (transaction: TransactionWithRelations) => {
+    setSelectedTransaction(transaction);
+    setEditDialogOpen(true);
+  };
+
+  const handleDelete = (transaction: TransactionWithRelations) => {
+    setTransactionToDelete(transaction);
+  };
+
+  const confirmDelete = async () => {
+    if (!transactionToDelete) return;
+
+    try {
+      await deleteMutation.mutateAsync(transactionToDelete.id);
+      toast.success("Transação deletada", {
+        description: "A transação foi removida com sucesso.",
+        action: {
+          label: "Desfazer",
+          onClick: () => {
+            const { id, created_at, updated_at, ...transactionData } =
+              transactionToDelete;
+            createMutation.mutate(transactionData);
+          },
+        },
+      });
+    } catch (error) {
+      toast.error("Erro ao deletar", {
+        description: "Não foi possível remover a transação. Tente novamente.",
+      });
+    } finally {
+      setTransactionToDelete(null);
+    }
+  };
+
+  const getAccountName = (transaction: TransactionWithRelations) => {
+    if (!transaction.account) {
+      return "Sem conta";
+    }
+    return transaction.account.name || "Sem conta";
   };
 
   // Get days remaining/overdue
@@ -485,109 +573,145 @@ export default function Bills() {
             </Card>
           )}
 
-          {/* Table */}
-          <Card>
-            <CardContent className="pt-6">
-              {filteredTransactions.length === 0 ? (
-                <EmptyState
-                  icon={Receipt}
-                  title="Nenhuma conta encontrada"
-                  description="Não encontramos nenhuma conta com os filtros selecionados."
-                />
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Descrição</TableHead>
-                      <TableHead>Categoria</TableHead>
-                      <TableHead>Conta</TableHead>
-                      <TableHead className="text-right">Valor</TableHead>
-                      <TableHead>Vencimento</TableHead>
-                      <TableHead>Dias</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Ação</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredTransactions.map((transaction) => {
-                      const daysInfo = getDaysInfo(transaction.due_date);
-                      const DaysIcon = daysInfo?.icon;
+          {/* Table / Cards */}
+          <div className="space-y-4">
+            {/* Desktop Table */}
+            <Card className="hidden md:block">
+              <CardContent className="pt-6">
+                {filteredTransactions.length === 0 ? (
+                  <EmptyState
+                    icon={Receipt}
+                    title="Nenhuma conta encontrada"
+                    description="Não encontramos nenhuma conta com os filtros selecionados."
+                  />
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Descrição</TableHead>
+                        <TableHead>Categoria</TableHead>
+                        <TableHead>Conta</TableHead>
+                        <TableHead className="text-right">Valor</TableHead>
+                        <TableHead>Vencimento</TableHead>
+                        <TableHead>Dias</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Ação</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredTransactions.map((transaction) => {
+                        const daysInfo = getDaysInfo(transaction.due_date);
+                        const DaysIcon = daysInfo?.icon;
 
-                      return (
-                        <TableRow key={transaction.id}>
-                          <TableCell className="font-medium">
-                            {transaction.description}
-                          </TableCell>
-                          <TableCell>
-                            {transaction.category && (
+                        return (
+                          <TableRow key={transaction.id}>
+                            <TableCell className="font-medium">
+                              {transaction.description}
+                            </TableCell>
+                            <TableCell>
+                              {transaction.category && (
+                                <Badge
+                                  variant="outline"
+                                  style={{
+                                    borderColor: transaction.category.color,
+                                    color: transaction.category.color,
+                                  }}
+                                >
+                                  {transaction.category.name}
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {transaction.account?.name || "-"}
+                            </TableCell>
+                            <TableCell className="text-right font-semibold">
+                              {formatCurrency(transaction.amount)}
+                            </TableCell>
+                            <TableCell>
+                              {transaction.due_date
+                                ? formatDateSafe(transaction.due_date)
+                                : "-"}
+                            </TableCell>
+                            <TableCell>
+                              {daysInfo && (
+                                <Badge variant={daysInfo.variant}>
+                                  {DaysIcon && (
+                                    <DaysIcon className="h-3 w-3 mr-1" />
+                                  )}
+                                  {daysInfo.text}
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
                               <Badge
-                                variant="outline"
-                                style={{
-                                  borderColor: transaction.category.color,
-                                  color: transaction.category.color,
-                                }}
+                                variant={
+                                  transaction.status === "overdue" ||
+                                  (transaction.due_date &&
+                                    isPast(parseDateSafe(transaction.due_date)))
+                                    ? "destructive"
+                                    : "secondary"
+                                }
                               >
-                                {transaction.category.name}
-                              </Badge>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {transaction.account?.name || "-"}
-                          </TableCell>
-                          <TableCell className="text-right font-semibold">
-                            {formatCurrency(transaction.amount)}
-                          </TableCell>
-                          <TableCell>
-                            {transaction.due_date
-                              ? formatDateSafe(transaction.due_date)
-                              : "-"}
-                          </TableCell>
-                          <TableCell>
-                            {daysInfo && (
-                              <Badge variant={daysInfo.variant}>
-                                {DaysIcon && (
-                                  <DaysIcon className="h-3 w-3 mr-1" />
-                                )}
-                                {daysInfo.text}
-                              </Badge>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                transaction.status === "overdue" ||
+                                {transaction.status === "overdue" ||
                                 (transaction.due_date &&
                                   isPast(parseDateSafe(transaction.due_date)))
-                                  ? "destructive"
-                                  : "secondary"
-                              }
-                            >
-                              {transaction.status === "overdue" ||
-                              (transaction.due_date &&
-                                isPast(parseDateSafe(transaction.due_date)))
-                                ? "Vencida"
-                                : "Pendente"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                handleOpenMarkAsPaidDialog(transaction)
-                              }
-                            >
-                              <CheckCircle className="h-4 w-4 text-green-600" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+                                  ? "Vencida"
+                                  : "Pendente"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleOpenMarkAsPaidDialog(
+                                      transaction as TransactionWithRelations,
+                                    )
+                                  }
+                                >
+                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden space-y-3">
+              {filteredTransactions.length === 0 ? (
+                <Card>
+                  <CardContent className="pt-6">
+                    <EmptyState
+                      icon={Receipt}
+                      title="Nenhuma conta encontrada"
+                      description="Não encontramos nenhuma conta com os filtros selecionados."
+                    />
+                  </CardContent>
+                </Card>
+              ) : (
+                filteredTransactions.map((transaction) => (
+                  <TransactionCard
+                    key={transaction.id}
+                    transaction={transaction as TransactionWithRelations}
+                    statusLabels={statusLabels}
+                    statusVariants={statusVariants}
+                    getAccountName={getAccountName}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onMarkAsPaid={handleOpenMarkAsPaidDialog}
+                    isDeleting={deleteMutation.isPending}
+                  />
+                ))
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
 
@@ -597,6 +721,40 @@ export default function Bills() {
         open={markAsPaidDialogOpen}
         onOpenChange={setMarkAsPaidDialogOpen}
       />
+
+      {/* Edit Transaction Dialog */}
+      <TransactionDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        transaction={
+          selectedTransaction as TransactionWithRelations | undefined
+        }
+      />
+
+      {/* Delete Confirmation */}
+      <AlertDialog
+        open={!!transactionToDelete}
+        onOpenChange={(open) => !open && setTransactionToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente a
+              transação e removerá os dados dos nossos servidores.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sim, excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
