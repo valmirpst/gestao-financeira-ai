@@ -432,20 +432,19 @@ export default function Bills() {
           {isMobile && <AccountFilter />}
 
           {/* Filters */}
-          <Collapsible defaultOpen={!isMobile}>
-            {isMobile && (
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full md:w-auto">
-                  <Filter className="h-4 w-4" />
-                  Expandir Filtros
-                </Button>
-              </CollapsibleTrigger>
-            )}
+          <Collapsible
+            key={isMobile ? "mobile" : "desktop"}
+            defaultOpen={!isMobile}
+            className="flex flex-col gap-1"
+          >
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" className="w-full">
+                <Filter className="h-4 w-4" />
+                Filtros
+              </Button>
+            </CollapsibleTrigger>
             <CollapsibleContent>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Filtros</CardTitle>
-                </CardHeader>
+              <Card className="pt-4">
                 <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   {/* Status Filter */}
                   <div className="space-y-2">

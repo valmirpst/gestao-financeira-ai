@@ -6,15 +6,16 @@ import { useEffect, useState } from "react";
  * @returns Um booleano indicando se a tela atende à consulta de mídia.
  */
 export function useIsMobile(maxWidth: string = "768px"): boolean {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(`(max-width: ${maxWidth})`).matches;
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(max-width: ${maxWidth})`);
 
-    // Atualiza imediatamente
     setIsMobile(mediaQuery.matches);
 
-    // Listener para mudanças (ex: redimensionar)
     const handler = (event: MediaQueryListEvent) => setIsMobile(event.matches);
     mediaQuery.addEventListener("change", handler);
 

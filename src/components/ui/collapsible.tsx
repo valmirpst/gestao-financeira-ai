@@ -13,7 +13,10 @@ const CollapsibleContent = forwardRef<
   return (
     <CollapsiblePrimitive.CollapsibleContent
       ref={ref}
-      className={cn("[data-state=open]:animate-slide-down", className)}
+      className={cn(
+        "data-[state=open]:animate-fade-in-0 data-[state=closed]:animate-fade-out-0",
+        className,
+      )}
       {...props}
     />
   );
