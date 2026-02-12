@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Collapsible,
   CollapsibleContent,
@@ -101,6 +102,11 @@ export default function Transactions() {
   const [selectedTransaction, setSelectedTransaction] = useState<
     Transaction | undefined
   >(undefined);
+
+  // Selection state
+  const [selectedTransactionIds, setSelectedTransactionIds] = useState<
+    Set<string>
+  >(new Set());
 
   // Filters state
   const [type, setType] = useState<TransactionType | "all">("all");
@@ -207,6 +213,33 @@ export default function Transactions() {
     return filteredTransactions.slice(startIndex, endIndex);
   }, [filteredTransactions, currentPage]);
 
+  // Calculate totals for selected transactions
+  const selectedTotals = useMemo(() => {
+    const selectedTransactions = paginatedTransactions.filter((t) =>
+      selectedTransactionIds.has(t.id),
+    );
+
+    const count = selectedTransactions.length;
+    const income = selectedTransactions
+      .filter((t) => t.type === "income")
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const expense = selectedTransactions
+      .filter((t) => t.type === "expense")
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const total = income - expense;
+    const average = count > 0 ? total / count : 0;
+
+    return {
+      count,
+      income,
+      expense,
+      total,
+      average,
+    };
+  }, [paginatedTransactions, selectedTransactionIds]);
+
   // Reset to page 1 when filters change
   useMemo(() => {
     setCurrentPage(1);
@@ -294,6 +327,31 @@ export default function Transactions() {
     search !== "" ||
     dateRange.from !== undefined ||
     dateRange.to !== undefined;
+
+  // Selection handlers
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      const allIds = new Set(paginatedTransactions.map((t) => t.id));
+      setSelectedTransactionIds(allIds);
+    } else {
+      setSelectedTransactionIds(new Set());
+    }
+  };
+
+  const handleSelectTransaction = (id: string, checked: boolean) => {
+    const newSelection = new Set(selectedTransactionIds);
+    if (checked) {
+      newSelection.add(id);
+    } else {
+      newSelection.delete(id);
+    }
+    setSelectedTransactionIds(newSelection);
+  };
+
+  // Clear selections when page changes
+  useMemo(() => {
+    setSelectedTransactionIds(new Set());
+  }, [currentPage]);
 
   // Get account name from transaction
   const getAccountName = (transaction: TransactionWithRelations) => {
@@ -563,6 +621,18 @@ export default function Transactions() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={
+                    paginatedTransactions.length > 0 &&
+                    paginatedTransactions.every((t) =>
+                      selectedTransactionIds.has(t.id),
+                    )
+                  }
+                  onCheckedChange={handleSelectAll}
+                  aria-label="Selecionar todas"
+                />
+              </TableHead>
               <TableHead
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={() => handleSort("date")}
@@ -628,6 +698,9 @@ export default function Transactions() {
               Array.from({ length: 5 }).map((_, index) => (
                 <TableRow key={index}>
                   <TableCell>
+                    <Skeleton className="h-4 w-4" />
+                  </TableCell>
+                  <TableCell>
                     <Skeleton className="h-4 w-[100px]" />
                   </TableCell>
                   <TableCell>
@@ -661,7 +734,7 @@ export default function Transactions() {
               ))
             ) : paginatedTransactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-64 text-center">
+                <TableCell colSpan={9} className="h-64 text-center">
                   <EmptyState
                     icon={Receipt}
                     title="Nenhuma transação encontrada"
@@ -690,6 +763,18 @@ export default function Transactions() {
                       "opacity-60 hover:opacity-100 transition-opacity",
                   )}
                 >
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedTransactionIds.has(transaction.id)}
+                      onCheckedChange={(checked) =>
+                        handleSelectTransaction(
+                          transaction.id,
+                          checked as boolean,
+                        )
+                      }
+                      aria-label={`Selecionar transação ${transaction.description}`}
+                    />
+                  </TableCell>
                   <TableCell>{formatDateSafe(transaction.date)}</TableCell>
                   <TableCell>
                     {transaction.due_date
@@ -776,7 +861,31 @@ export default function Transactions() {
       </div>
 
       {/* Mobile ListView */}
-      <div className="md:hidden space-y-3">
+      <div
+        className={cn(
+          "md:hidden space-y-3",
+          selectedTransactionIds.size > 0 && "pb-40",
+        )}
+      >
+        {/* Select All Button for Mobile */}
+        {!isLoading && paginatedTransactions.length > 0 && (
+          <div className="flex items-center gap-2 p-2 rounded-lg border bg-card">
+            <Checkbox
+              checked={
+                paginatedTransactions.length > 0 &&
+                paginatedTransactions.every((t) =>
+                  selectedTransactionIds.has(t.id),
+                )
+              }
+              onCheckedChange={handleSelectAll}
+              aria-label="Selecionar todas"
+              id="selectAll"
+            />
+            <label htmlFor="selectAll" className="text-sm font-medium">
+              Selecionar todas ({paginatedTransactions.length})
+            </label>
+          </div>
+        )}
         {isLoading ? (
           Array.from({ length: 3 }).map((_, index) => (
             <div
@@ -827,6 +936,8 @@ export default function Transactions() {
               onDelete={handleDelete}
               onMarkAsPaid={handleOpenMarkAsPaidDialog}
               isDeleting={deleteMutation.isPending}
+              isSelected={selectedTransactionIds.has(transaction.id)}
+              onSelect={handleSelectTransaction}
             />
           ))
         )}
@@ -968,6 +1079,73 @@ export default function Transactions() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Selection Summary Bar */}
+      {selectedTransactionIds.size > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-card border-t shadow-lg z-50">
+          <div className="container mx-auto px-4 py-3 md:py-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4">
+              <div className="flex items-center gap-2 w-full md:w-auto">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedTransactionIds(new Set())}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+                <span className="text-sm font-medium">
+                  {selectedTotals.count}{" "}
+                  {selectedTotals.count === 1
+                    ? "transação selecionada"
+                    : "transações selecionadas"}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 md:flex md:items-center gap-3 md:gap-6 w-full md:w-auto">
+                <div className="flex flex-col items-center md:items-end">
+                  <span className="text-xs text-muted-foreground">
+                    Entradas
+                  </span>
+                  <span className="text-sm font-semibold text-green-600">
+                    {formatCurrency(selectedTotals.income)}
+                  </span>
+                </div>
+                <div className="flex flex-col items-center md:items-end">
+                  <span className="text-xs text-muted-foreground">Saídas</span>
+                  <span className="text-sm font-semibold text-red-600">
+                    {formatCurrency(selectedTotals.expense)}
+                  </span>
+                </div>
+                <div className="flex flex-col items-center md:items-end">
+                  <span className="text-xs text-muted-foreground">Total</span>
+                  <span
+                    className={cn(
+                      "text-sm font-semibold",
+                      selectedTotals.total >= 0
+                        ? "text-green-600"
+                        : "text-red-600",
+                    )}
+                  >
+                    {formatCurrency(selectedTotals.total)}
+                  </span>
+                </div>
+                <div className="flex flex-col items-center md:items-end">
+                  <span className="text-xs text-muted-foreground">Média</span>
+                  <span
+                    className={cn(
+                      "text-sm font-semibold",
+                      selectedTotals.average >= 0
+                        ? "text-green-600"
+                        : "text-red-600",
+                    )}
+                  >
+                    {formatCurrency(selectedTotals.average)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn, formatCurrency, formatDateSafe } from "@/lib/utils";
 import { TransactionStatus } from "@/types";
 import { TransactionWithRelations } from "@/types/database.types";
@@ -18,6 +19,8 @@ interface TransactionCardProps {
   onDelete: (t: TransactionWithRelations) => void;
   onMarkAsPaid: (t: TransactionWithRelations) => void;
   isDeleting: boolean;
+  isSelected?: boolean;
+  onSelect?: (id: string, checked: boolean) => void;
 }
 
 export function TransactionCard({
@@ -29,6 +32,8 @@ export function TransactionCard({
   onDelete,
   onMarkAsPaid,
   isDeleting,
+  isSelected = false,
+  onSelect,
 }: TransactionCardProps) {
   const controls = useAnimation();
 
@@ -96,8 +101,19 @@ export function TransactionCard({
         <div
           className={cn("p-4", transaction.status === "paid" && "opacity-60")}
         >
-          <div className="flex items-start justify-between mb-2">
-            <div>
+          <div className="flex items-start justify-between mb-2 gap-3">
+            {onSelect && (
+              <div className="pt-1">
+                <Checkbox
+                  checked={isSelected}
+                  onCheckedChange={(checked) =>
+                    onSelect(transaction.id, checked as boolean)
+                  }
+                  aria-label={`Selecionar transação ${transaction.description}`}
+                />
+              </div>
+            )}
+            <div className="flex-1">
               <p className="font-semibold">{transaction.description}</p>
               <p className="text-xs text-muted-foreground">
                 {formatDateSafe(transaction.date)}
