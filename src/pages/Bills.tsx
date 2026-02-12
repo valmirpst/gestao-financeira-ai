@@ -15,6 +15,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
   Popover,
@@ -39,6 +44,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import {
   useCreateTransaction,
   useDeleteTransaction,
@@ -65,6 +71,7 @@ import {
   CheckCircle,
   Clock,
   DollarSign,
+  Filter,
   Receipt,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -93,6 +100,7 @@ const statusVariants: Record<
 
 export default function Bills() {
   const [searchParams] = useSearchParams();
+  const isMobile = useIsMobile();
 
   // Get initial tab from URL search params
   const initialTab = searchParams.get("tab");
@@ -322,6 +330,25 @@ export default function Bills() {
     }
   };
 
+  const AccountFilter = () => (
+    <div className="space-y-2">
+      <label className="text-sm font-medium">Conta</label>
+      <Select value={accountFilter} onValueChange={setAccountFilter}>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Todas</SelectItem>
+          {accounts.map((acc) => (
+            <SelectItem key={acc.id} value={acc.id}>
+              {acc.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -402,93 +429,92 @@ export default function Bills() {
         </TabsList>
 
         <TabsContent value={activeTab} className="space-y-4">
+          {isMobile && <AccountFilter />}
+
           {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filtros</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {/* Status Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
-                <Select
-                  value={statusFilter}
-                  onValueChange={(v) => setStatusFilter(v as StatusFilter)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
-                    <SelectItem value="pending">Pendentes</SelectItem>
-                    <SelectItem value="overdue">Vencidas</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          <Collapsible defaultOpen={!isMobile}>
+            {isMobile && (
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" className="w-full md:w-auto">
+                  <Filter className="h-4 w-4" />
+                  Expandir Filtros
+                </Button>
+              </CollapsibleTrigger>
+            )}
+            <CollapsibleContent>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Filtros</CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  {/* Status Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Status</label>
+                    <Select
+                      value={statusFilter}
+                      onValueChange={(v) => setStatusFilter(v as StatusFilter)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas</SelectItem>
+                        <SelectItem value="pending">Pendentes</SelectItem>
+                        <SelectItem value="overdue">Vencidas</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              {/* Period Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Período</label>
-                <Select
-                  value={periodFilter}
-                  onValueChange={(v) => setPeriodFilter(v as PeriodFilter)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="this_month">Este mês</SelectItem>
-                    <SelectItem value="30days">Próximos 30 dias</SelectItem>
-                    <SelectItem value="overdue">Vencidas</SelectItem>
-                    <SelectItem value="custom">Customizado</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                  {/* Period Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Período</label>
+                    <Select
+                      value={periodFilter}
+                      onValueChange={(v) => setPeriodFilter(v as PeriodFilter)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="this_month">Este mês</SelectItem>
+                        <SelectItem value="30days">Próximos 30 dias</SelectItem>
+                        <SelectItem value="overdue">Vencidas</SelectItem>
+                        <SelectItem value="custom">Customizado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              {/* Category Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Categoria</label>
-                <Select
-                  value={categoryFilter}
-                  onValueChange={setCategoryFilter}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
-                    {categories
-                      .filter(
-                        (cat) => cat.type === activeTab || cat.type === "both",
-                      )
-                      .map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  {/* Category Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Categoria</label>
+                    <Select
+                      value={categoryFilter}
+                      onValueChange={setCategoryFilter}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas</SelectItem>
+                        {categories
+                          .filter(
+                            (cat) =>
+                              cat.type === activeTab || cat.type === "both",
+                          )
+                          .map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id}>
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              {/* Account Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Conta</label>
-                <Select value={accountFilter} onValueChange={setAccountFilter}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
-                    {accounts.map((acc) => (
-                      <SelectItem key={acc.id} value={acc.id}>
-                        {acc.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
+                  {!isMobile && <AccountFilter />}
+                </CardContent>
+              </Card>
+            </CollapsibleContent>
+          </Collapsible>
 
           {/* Custom Date Range */}
           {periodFilter === "custom" && (
