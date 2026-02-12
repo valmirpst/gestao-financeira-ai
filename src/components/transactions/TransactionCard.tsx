@@ -53,7 +53,7 @@ export function TransactionCard({
         {transaction.status === "pending" && (
           <Button
             variant="ghost"
-            className="flex h-full flex-1 flex-col items-center justify-center gap-1 rounded-none text-green-700 hover:bg-green-100 hover:text-green-800"
+            className="flex h-full flex-1 flex-col items-center justify-center gap-1 rounded-none text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900 hover:text-green-800 dark:hover:text-green-200"
             onClick={() => {
               onMarkAsPaid(transaction);
               controls.start({ x: 0 });
@@ -64,7 +64,7 @@ export function TransactionCard({
         )}
         <Button
           variant="ghost"
-          className="flex h-full flex-1 flex-col items-center justify-center gap-1 rounded-none text-blue-700 hover:bg-blue-100 hover:text-blue-800"
+          className="flex h-full flex-1 flex-col items-center justify-center gap-1 rounded-none text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-800 dark:hover:text-blue-200"
           onClick={() => {
             onEdit(transaction);
             controls.start({ x: 0 });
@@ -74,7 +74,7 @@ export function TransactionCard({
         </Button>
         <Button
           variant="ghost"
-          className="flex h-full flex-1 flex-col items-center justify-center gap-1 rounded-none text-red-700 hover:bg-red-100 hover:text-red-800"
+          className="flex h-full flex-1 flex-col items-center justify-center gap-1 rounded-none text-red-700 dark:text-red-600 hover:bg-red-100 dark:hover:bg-red-900 hover:text-red-800 dark:hover:text-red-200"
           onClick={() => {
             onDelete(transaction);
             controls.start({ x: 0 });

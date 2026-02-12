@@ -1,5 +1,17 @@
 import { MarkAsPaidDialog } from "@/components/bills/MarkAsPaidDialog";
 import { MonthlyEvolutionChart } from "@/components/dashboard/MonthlyEvolutionChart";
+import { TransactionCard } from "@/components/transactions/TransactionCard";
+import { TransactionDialog } from "@/components/transactions/TransactionDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,9 +30,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useTransactions } from "@/hooks/useTransactions";
+import {
+  useCreateTransaction,
+  useDeleteTransaction,
+  useTransactions,
+} from "@/hooks/useTransactions";
 import { formatCurrency, formatDateSafe, parseDateSafe } from "@/lib/utils";
-import type { Transaction } from "@/types/database.types";
+import type { TransactionStatus } from "@/types";
+import type {
+  Transaction,
+  TransactionWithRelations,
+} from "@/types/database.types";
 import {
   addDays,
   differenceInDays,
@@ -44,6 +64,24 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+const statusLabels: Record<TransactionStatus, string> = {
+  pending: "Pendente",
+  paid: "Pago",
+  overdue: "Vencido",
+  cancelled: "Cancelado",
+};
+
+const statusVariants: Record<
+  TransactionStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
+  pending: "secondary",
+  paid: "default",
+  overdue: "destructive",
+  cancelled: "outline",
+};
 
 type PeriodType =
   | "current_month"
@@ -57,7 +95,14 @@ export default function Dashboard() {
   const [period, setPeriod] = useState<PeriodType>("current_month");
   const [markAsPaidDialogOpen, setMarkAsPaidDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
+    useState<TransactionWithRelations | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<TransactionWithRelations | null>(null);
+
+  // Mutations
+  const deleteMutation = useDeleteTransaction();
+  const createMutation = useCreateTransaction();
 
   // Calcular datas do período selecionado
   const { startDate, endDate } = useMemo(() => {
@@ -286,9 +331,52 @@ export default function Dashboard() {
   };
 
   // Handle mark as paid
-  const handleOpenMarkAsPaidDialog = (transaction: Transaction) => {
-    setSelectedTransaction(transaction);
+  const handleOpenMarkAsPaidDialog = (
+    transaction: TransactionWithRelations | Transaction,
+  ) => {
+    setSelectedTransaction(transaction as TransactionWithRelations);
     setMarkAsPaidDialogOpen(true);
+  };
+
+  const handleEdit = (transaction: TransactionWithRelations) => {
+    setSelectedTransaction(transaction);
+    setEditDialogOpen(true);
+  };
+
+  const handleDelete = (transaction: TransactionWithRelations) => {
+    setTransactionToDelete(transaction);
+  };
+
+  const confirmDelete = async () => {
+    if (!transactionToDelete) return;
+
+    try {
+      await deleteMutation.mutateAsync(transactionToDelete.id);
+      toast.success("Transação deletada", {
+        description: "A transação foi removida com sucesso.",
+        action: {
+          label: "Desfazer",
+          onClick: () => {
+            const { id, created_at, updated_at, ...transactionData } =
+              transactionToDelete;
+            createMutation.mutate(transactionData);
+          },
+        },
+      });
+    } catch (error) {
+      toast.error("Erro ao remover", {
+        description: "Não foi possível remover a transação. Tente novamente.",
+      });
+    } finally {
+      setTransactionToDelete(null);
+    }
+  };
+
+  const getAccountName = (transaction: TransactionWithRelations) => {
+    if (!transaction.account) {
+      return "Sem conta";
+    }
+    return transaction.account.name || "Sem conta";
   };
 
   return (
@@ -494,69 +582,90 @@ export default function Dashboard() {
               </p>
             </div>
           ) : (
-            <Table className="min-w-[600px]">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Categoria</TableHead>
-                  <TableHead className="text-right">Valor</TableHead>
-                  <TableHead>Vencimento</TableHead>
-                  <TableHead>Dias</TableHead>
-                  <TableHead className="text-right">Ação</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {upcomingBillsFiltered.map((bill) => {
-                  const daysInfo = getDaysInfo(bill.due_date);
-                  const DaysIcon = daysInfo?.icon;
+            <div className="hidden md:block">
+              <Table className="min-w-[600px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Descrição</TableHead>
+                    <TableHead>Categoria</TableHead>
+                    <TableHead className="text-right">Valor</TableHead>
+                    <TableHead>Vencimento</TableHead>
+                    <TableHead>Dias</TableHead>
+                    <TableHead className="text-right">Ação</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {upcomingBillsFiltered.map((bill) => {
+                    const daysInfo = getDaysInfo(bill.due_date);
+                    const DaysIcon = daysInfo?.icon;
 
-                  return (
-                    <TableRow key={bill.id}>
-                      <TableCell className="font-medium">
-                        {bill.description}
-                      </TableCell>
-                      <TableCell>
-                        {bill.category && (
-                          <Badge
-                            variant="outline"
-                            style={{
-                              borderColor: bill.category.color,
-                              color: bill.category.color,
-                            }}
+                    return (
+                      <TableRow key={bill.id}>
+                        <TableCell className="font-medium">
+                          {bill.description}
+                        </TableCell>
+                        <TableCell>
+                          {bill.category && (
+                            <Badge
+                              variant="outline"
+                              style={{
+                                borderColor: bill.category.color,
+                                color: bill.category.color,
+                              }}
+                            >
+                              {bill.category.name}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">
+                          {formatCurrency(bill.amount)}
+                        </TableCell>
+                        <TableCell>
+                          {bill.due_date ? formatDateSafe(bill.due_date) : "-"}
+                        </TableCell>
+                        <TableCell>
+                          {daysInfo && (
+                            <Badge variant={daysInfo.variant}>
+                              {DaysIcon && (
+                                <DaysIcon className="h-3 w-3 mr-1" />
+                              )}
+                              {daysInfo.text}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleOpenMarkAsPaidDialog(bill)}
                           >
-                            {bill.category.name}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold">
-                        {formatCurrency(bill.amount)}
-                      </TableCell>
-                      <TableCell>
-                        {bill.due_date ? formatDateSafe(bill.due_date) : "-"}
-                      </TableCell>
-                      <TableCell>
-                        {daysInfo && (
-                          <Badge variant={daysInfo.variant}>
-                            {DaysIcon && <DaysIcon className="h-3 w-3 mr-1" />}
-                            {daysInfo.text}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleOpenMarkAsPaidDialog(bill)}
-                        >
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           )}
+
+          {/* Mobile List */}
+          <div className="md:hidden space-y-3 mt-4">
+            {upcomingBillsFiltered.map((transaction) => (
+              <TransactionCard
+                key={transaction.id}
+                transaction={transaction}
+                statusLabels={statusLabels}
+                statusVariants={statusVariants}
+                getAccountName={getAccountName}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onMarkAsPaid={handleOpenMarkAsPaidDialog}
+                isDeleting={deleteMutation.isPending}
+              />
+            ))}
+          </div>
         </CardContent>
       </Card>
 
@@ -566,6 +675,40 @@ export default function Dashboard() {
         open={markAsPaidDialogOpen}
         onOpenChange={setMarkAsPaidDialogOpen}
       />
+
+      {/* Edit Transaction Dialog */}
+      <TransactionDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        transaction={
+          selectedTransaction as TransactionWithRelations | undefined
+        }
+      />
+
+      {/* Delete Confirmation */}
+      <AlertDialog
+        open={!!transactionToDelete}
+        onOpenChange={(open) => !open && setTransactionToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente a
+              transação e removerá os dados dos nossos servidores.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sim, excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
