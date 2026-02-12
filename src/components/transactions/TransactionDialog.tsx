@@ -38,7 +38,6 @@ export function TransactionDialog({
   const deleteMutation = useDeleteTransaction();
 
   const handleSubmit = async (data: TransactionInsert) => {
-    console.log(data);
     try {
       if (isEditing) {
         await updateMutation.mutateAsync({
@@ -59,14 +58,14 @@ export function TransactionDialog({
   const handleDelete = async () => {
     if (!transaction) return;
 
-    if (!confirm("Tem certeza que deseja deletar esta transação?")) return;
+    if (!confirm("Tem certeza que deseja remover esta transação?")) return;
 
     try {
       await deleteMutation.mutateAsync(transaction.id);
       toast.success("Transação deletada com sucesso!");
       onOpenChange(false);
     } catch (error) {
-      toast.error("Erro ao deletar transação");
+      toast.error("Erro ao remover transação");
     }
   };
 

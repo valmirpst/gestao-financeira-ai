@@ -34,7 +34,7 @@ export default function Budgets() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja deletar este orçamento?")) {
+    if (!confirm("Tem certeza que deseja remover este orçamento?")) {
       return;
     }
 
@@ -42,7 +42,7 @@ export default function Budgets() {
       await deleteBudget.mutateAsync(id);
       toast.success("Orçamento deletado com sucesso!");
     } catch (error) {
-      toast.error("Erro ao deletar orçamento");
+      toast.error("Erro ao remover orçamento");
     }
   };
 
@@ -210,7 +210,7 @@ export default function Budgets() {
                       onClick={() => handleDelete(budget.id)}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Deletar
+                      Remover
                     </Button>
                   </div>
                 </CardContent>

@@ -70,7 +70,7 @@ export function useUpdateCategory() {
 }
 
 /**
- * Hook para deletar categoria
+ * Hook para remover categoria
  */
 export function useDeleteCategory() {
   const queryClient = useQueryClient();
@@ -84,7 +84,7 @@ export function useDeleteCategory() {
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
     },
     onError: (error) => {
-      toast.error(error.message || "Erro ao deletar categoria");
+      toast.error(error.message || "Erro ao remover categoria");
     },
   });
 }

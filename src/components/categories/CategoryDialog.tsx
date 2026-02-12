@@ -55,14 +55,14 @@ export function CategoryDialog({
   const handleDelete = async () => {
     if (!category) return;
 
-    if (!confirm("Tem certeza que deseja deletar esta categoria?")) return;
+    if (!confirm("Tem certeza que deseja remover esta categoria?")) return;
 
     try {
       await deleteMutation.mutateAsync(category.id);
       toast.success("Categoria deletada com sucesso!");
       onOpenChange(false);
     } catch (error) {
-      toast.error("Erro ao deletar categoria");
+      toast.error("Erro ao remover categoria");
     }
   };
 

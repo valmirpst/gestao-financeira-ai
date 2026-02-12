@@ -233,7 +233,7 @@ export default function Transactions() {
         },
       });
     } catch (error) {
-      toast.error("Erro ao deletar", {
+      toast.error("Erro ao remover", {
         description: "Não foi possível remover a transação. Tente novamente.",
       });
     } finally {
@@ -285,8 +285,6 @@ export default function Transactions() {
     search !== "" ||
     dateRange.from !== undefined ||
     dateRange.to !== undefined;
-
-  console.log(allTransactions);
 
   // Get account name from transaction
   const getAccountName = (transaction: TransactionWithRelations) => {
@@ -858,7 +856,7 @@ export default function Transactions() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Tem certeza que deseja deletar?</AlertDialogTitle>
+            <AlertDialogTitle>Tem certeza que deseja remover?</AlertDialogTitle>
             <AlertDialogDescription>
               Esta ação não pode ser desfeita. Isso excluirá permanentemente a
               transação de valor{" "}
@@ -880,7 +878,7 @@ export default function Transactions() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={confirmDelete}
             >
-              Deletar
+              Remover
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

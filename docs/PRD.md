@@ -160,7 +160,7 @@ Saída de Dados:
 Tabela com colunas: data, data vencimento, descrição, categoria, conta, tags, valor, status
 Total do período filtrado
 Total pendente (soma de transações com status pending/overdue)
-Opções de ação: editar, duplicar, deletar, marcar como pago (se pending/overdue)
+Opções de ação: editar, duplicar, remover, marcar como pago (se pending/overdue)
 Busca por descrição
 Indicador visual de status:
 
@@ -496,7 +496,7 @@ Data futura: Aceitar até 1 dia no futuro (para lançamentos do dia seguinte), r
 Valor zero: Rejeitar transações com valor = 0
 Valor muito alto: Alertar usuário se valor > 10x a média histórica, mas permitir
 Categoria deletada: Se categoria for deletada, transações associadas ficam sem categoria (null)
-Conta deletada: Não permitir deletar conta com transações; forçar "arquivar" (is_active = false)
+Conta deletada: Não permitir remover conta com transações; forçar "arquivar" (is_active = false)
 Edição de transação antiga: Permitir, mas alertar se for > 90 dias no passado
 Pagar com atraso: payment_date > due_date é permitido, mostrar "Pago com X dias de atraso"
 Pagar adiantado: payment_date < due_date é permitido, mostrar "Pago X dias antes do vencimento"
@@ -512,7 +512,7 @@ Edição de recorrência:
 "Editar apenas esta": quebra vínculo, transação se torna única
 "Editar esta e futuras": atualiza config, futuras instâncias seguem nova regra
 
-Deletar recorrência: Opção de deletar apenas uma instância ou toda a série
+Remover recorrência: Opção de remover apenas uma instância ou toda a série
 Pagar instância recorrente: Não afeta próximas instâncias, apenas a atual muda para paid
 
 3. Orçamentos
@@ -534,8 +534,8 @@ Transferência pendente: Criar ambas transações como pending, pagar uma não p
 
 5. Categorias
 
-Categoria sem uso: Permitir deletar
-Categoria com transações: Ao deletar, confirmar ação e setar transactions.category_id = null
+Categoria sem uso: Permitir remover
+Categoria com transações: Ao remover, confirmar ação e setar transactions.category_id = null
 Subcategorias órfãs: Se categoria pai for deletada, subcategorias sobem um nível (parent_category_id = null)
 Hierarquia profunda: Limitar a 2 níveis (pai > filho, sem neto)
 
@@ -754,7 +754,7 @@ Contador de dias até vencimento / dias em atraso
 
 Temas: Modo claro/escuro
 Responsividade: Mobile-first, funcional em todos os dispositivos
-Confirmações: Sempre pedir confirmação antes de deletar
+Confirmações: Sempre pedir confirmação antes de remover
 Atalhos: Enter para salvar, ESC para cancelar em formulários
 Estados Vazios: Mensagens amigáveis e call-to-actions quando não houver dados
 Alertas Proativos:

@@ -93,7 +93,7 @@ export function useUpdateTransaction() {
 }
 
 /**
- * Hook para deletar transação
+ * Hook para remover transação
  */
 export function useDeleteTransaction() {
   const queryClient = useQueryClient();
@@ -107,7 +107,7 @@ export function useDeleteTransaction() {
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => {
-      toast.error(error.message || "Erro ao deletar transação");
+      toast.error(error.message || "Erro ao remover transação");
     },
   });
 }

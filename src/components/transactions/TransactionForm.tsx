@@ -998,15 +998,20 @@ export function TransactionForm({
         </details>
 
         {/* Botões de Ação */}
-        <div className="flex gap-2 pt-4 border-t">
-          <Button
-            type="submit"
-            className="flex-1"
-            loading={isLoading}
-            size="lg"
-          >
-            {isEditing ? "Salvar Alterações" : "Criar Transação"}
-          </Button>
+        <div className="flex flex-col-reverse gap-3 pt-4 border-t sm:flex-row sm:justify-end sm:gap-2">
+          {isEditing && onDelete && (
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={onDelete}
+              disabled={isLoading}
+              size="lg"
+              className="w-full sm:w-auto sm:mr-auto"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Remover
+            </Button>
+          )}
 
           {onCancel && (
             <Button
@@ -1015,22 +1020,20 @@ export function TransactionForm({
               onClick={onCancel}
               disabled={isLoading}
               size="lg"
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
           )}
 
-          {isEditing && onDelete && (
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={onDelete}
-              disabled={isLoading}
-              size="lg"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          )}
+          <Button
+            type="submit"
+            className="w-full sm:w-auto"
+            loading={isLoading}
+            size="lg"
+          >
+            {isEditing ? "Salvar Alterações" : "Criar Transação"}
+          </Button>
         </div>
       </form>
     </Form>

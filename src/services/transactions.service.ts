@@ -187,7 +187,7 @@ export async function createTransaction(
         });
 
       if (accountTransactionError) {
-        // Se falhar ao criar a relação, deletar a transação criada
+        // Se falhar ao criar a relação, remover a transação criada
         await supabase.from("transactions").delete().eq("id", transaction.id);
         throw new Error(
           `Erro ao vincular conta à transação: ${accountTransactionError.message}`,
@@ -240,7 +240,7 @@ export async function updateTransaction(
 
     // Se account_id foi fornecido e não é vazio, atualizar a relação na tabela account_transactions
     if (account_id !== undefined && account_id !== "") {
-      // Primeiro, deletar a relação existente
+      // Primeiro, remover a relação existente
       await supabase
         .from("account_transactions")
         .delete()
@@ -276,7 +276,7 @@ export async function deleteTransaction(id: string): Promise<void> {
     const { error } = await supabase.from("transactions").delete().eq("id", id);
 
     if (error) {
-      throw new Error(`Erro ao deletar transação: ${error.message}`);
+      throw new Error(`Erro ao remover transação: ${error.message}`);
     }
   } catch (error) {
     console.error("deleteTransaction error:", error);

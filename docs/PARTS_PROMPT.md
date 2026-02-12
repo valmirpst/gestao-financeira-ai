@@ -203,7 +203,7 @@ Implemente cálculos conforme PRD. -->
    - Conta
    - Valor (vermelho para saída, verde para entrada)
    - Status (badge)
-   - Ações (editar, deletar, marcar como pago se pending)
+   - Ações (editar, remover, marcar como pago se pending)
 
 4. Paginação (50 itens por página)
 
@@ -247,7 +247,7 @@ Se marcado, mostrar:
 2. Botões de ação:
    - Salvar (primary)
    - Cancelar (secondary)
-   - Se editando: Deletar (destructive)
+   - Se editando: Remover (destructive)
 
 3. Criar modal/dialog para o formulário
 4. Criar componente /src/components/transactions/TransactionDialog.tsx que usa o form
@@ -266,7 +266,7 @@ Crie a página de categorias em /src/pages/Categories.tsx:
    - Cor (círculo)
    - Total gasto/recebido no mês (apenas paid)
    - Subcategorias (indentadas)
-   - Botões: Editar, Deletar
+   - Botões: Editar, Remover
 
 3. Botão "Nova Categoria"
 
@@ -409,7 +409,7 @@ Cálculo conforme PRD (apenas transações paid). -->
    - Porcentagem (cores: verde <80%, amarelo 80-100%, vermelho >100%)
    - Valor gasto / Valor orçado
    - Dias restantes no período
-   - Botões: Editar, Deletar
+   - Botões: Editar, Remover
 
 3. Botão "Novo Orçamento"
 
@@ -518,7 +518,7 @@ Usar shadcn Popover, Checkbox, Slider.
    - Ilustração + CTA (ex: "Adicione sua primeira transação")
 
 3. Confirmações:
-   - Dialog de confirmação antes de deletar (AlertDialog)
+   - Dialog de confirmação antes de remover (AlertDialog)
    - Avisos ao editar transações antigas (>90 dias)
 
 4. Atalhos de Teclado:

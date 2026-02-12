@@ -285,10 +285,19 @@ export function CategoryForm({
         />
 
         {/* Botões de Ação */}
-        <div className="flex gap-2 pt-4">
-          <Button type="submit" className="flex-1" disabled={isLoading}>
-            {isLoading ? "Salvando..." : "Salvar"}
-          </Button>
+        <div className="flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end">
+          {isEditing && onDelete && (
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={onDelete}
+              disabled={isLoading}
+              className="w-full sm:w-auto sm:mr-auto"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Excluir
+            </Button>
+          )}
 
           {onCancel && (
             <Button
@@ -296,21 +305,19 @@ export function CategoryForm({
               variant="outline"
               onClick={onCancel}
               disabled={isLoading}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
           )}
 
-          {isEditing && onDelete && (
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={onDelete}
-              disabled={isLoading}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          )}
+          <Button
+            type="submit"
+            className="w-full sm:w-auto"
+            disabled={isLoading}
+          >
+            {isLoading ? "Salvando..." : "Salvar"}
+          </Button>
         </div>
       </form>
     </Form>

@@ -224,7 +224,7 @@ export async function deleteAccount(id: string): Promise<void> {
     }
 
     if (transactions && transactions.length > 0) {
-      // Não permitir deletar conta com transações, apenas arquivar
+      // Não permitir remover conta com transações, apenas arquivar
       const { error } = await supabase
         .from("accounts")
         .update({ is_active: false })
@@ -234,11 +234,11 @@ export async function deleteAccount(id: string): Promise<void> {
         throw new Error(`Erro ao arquivar conta: ${error.message}`);
       }
     } else {
-      // Se não tem transações, pode deletar
+      // Se não tem transações, pode remover
       const { error } = await supabase.from("accounts").delete().eq("id", id);
 
       if (error) {
-        throw new Error(`Erro ao deletar conta: ${error.message}`);
+        throw new Error(`Erro ao remover conta: ${error.message}`);
       }
     }
   } catch (error) {

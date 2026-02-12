@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -376,26 +377,26 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
             />
 
             {/* Botões de Ação */}
-            <div className="flex gap-2 pt-4">
+            <DialogFooter className="flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:gap-0">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={handleCancel}
+                disabled={createTransferMutation.isPending}
+              >
+                Cancelar
+              </Button>
               <Button
                 type="submit"
-                className="flex-1"
+                className="w-full sm:w-auto"
                 disabled={createTransferMutation.isPending}
               >
                 {createTransferMutation.isPending
                   ? "Criando..."
                   : "Criar Transferência"}
               </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={createTransferMutation.isPending}
-              >
-                Cancelar
-              </Button>
-            </div>
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>

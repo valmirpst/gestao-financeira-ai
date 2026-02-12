@@ -77,7 +77,7 @@ export function useUpdateAccount() {
 }
 
 /**
- * Hook para deletar conta (soft delete)
+ * Hook para remover conta (soft delete)
  */
 export function useDeleteAccount() {
   const queryClient = useQueryClient();

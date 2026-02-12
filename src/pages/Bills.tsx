@@ -272,7 +272,7 @@ export default function Bills() {
         },
       });
     } catch (error) {
-      toast.error("Erro ao deletar", {
+      toast.error("Erro ao remover", {
         description: "Não foi possível remover a transação. Tente novamente.",
       });
     } finally {

@@ -193,7 +193,7 @@ export async function deleteCategory(id: string): Promise<void> {
     const { error } = await supabase.from("categories").delete().eq("id", id);
 
     if (error) {
-      throw new Error(`Erro ao deletar categoria: ${error.message}`);
+      throw new Error(`Erro ao remover categoria: ${error.message}`);
     }
   } catch (error) {
     console.error("deleteCategory error:", error);
