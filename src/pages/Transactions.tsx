@@ -114,6 +114,7 @@ export default function Transactions() {
   const [categoryId, setCategoryId] = useState<string>("all");
   const [accountId, setAccountId] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [hidePaid, setHidePaid] = useState(false);
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
     to: Date | undefined;
@@ -169,7 +170,15 @@ export default function Transactions() {
   // Filter transactions by search (client-side for description)
   // Filter and sort transactions (client-side)
   const filteredTransactions = useMemo(() => {
-    return [...allTransactions].sort((a, b) => {
+    let transactions = [...allTransactions];
+
+    // Filter out paid transactions if hidePaid is true
+    if (hidePaid) {
+      transactions = transactions.filter((t) => t.status !== "paid");
+    }
+
+    // Sort transactions
+    return transactions.sort((a, b) => {
       const key = sortConfig.key || "date";
       const aValue = a[key];
       const bValue = b[key];
@@ -181,7 +190,7 @@ export default function Transactions() {
       const comparison = aValue < bValue ? -1 : 1;
       return sortConfig.direction === "asc" ? comparison : -comparison;
     });
-  }, [allTransactions, sortConfig]);
+  }, [allTransactions, sortConfig, hidePaid]);
 
   // Calculate totals for the filtered period
   const totals = useMemo(() => {
@@ -243,7 +252,7 @@ export default function Transactions() {
   // Reset to page 1 when filters change
   useMemo(() => {
     setCurrentPage(1);
-  }, [type, status, categoryId, accountId, search, dateRange]);
+  }, [type, status, categoryId, accountId, search, hidePaid, dateRange]);
 
   // Delete confirmation state
   const [transactionToDelete, setTransactionToDelete] =
@@ -316,6 +325,7 @@ export default function Transactions() {
     setCategoryId("all");
     setAccountId("all");
     setSearch("");
+    setHidePaid(false);
     setDateRange({ from: undefined, to: undefined });
   };
 
@@ -325,6 +335,7 @@ export default function Transactions() {
     categoryId !== "all" ||
     accountId !== "all" ||
     search !== "" ||
+    hidePaid ||
     dateRange.from !== undefined ||
     dateRange.to !== undefined;
 
@@ -475,10 +486,10 @@ export default function Transactions() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <Card>
-              <CardContent className="pt-6">
+              <CardContent className="pt-6 space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {/* Search */}
-                  <div className="relative space-y-2 col-span-2">
+                  <div className="relative space-y-2 sm:col-span-2">
                     <label className="text-sm font-medium">Busca</label>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -550,7 +561,7 @@ export default function Transactions() {
                   {!isMobile && <AccountFilter />}
 
                   {/* Date Range Picker */}
-                  <div className="space-y-2 ">
+                  <div className="space-y-2 sm:col-span-2">
                     <label className="text-sm font-medium">Período</label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -561,7 +572,7 @@ export default function Transactions() {
                             !dateRange.from && "text-muted-foreground",
                           )}
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          <CalendarIcon className="mr-1 h-4 w-4" />
                           {dateRange.from ? (
                             dateRange.to ? (
                               <>
@@ -595,15 +606,30 @@ export default function Transactions() {
                       </PopoverContent>
                     </Popover>
                   </div>
+                </div>
+
+                <div className="flex justify-end md:justify-between">
+                  {/* Hide Paid Checkbox */}
+                  <div className="flex items-center space-x-2 ml-1">
+                    <Checkbox
+                      id="hidePaid"
+                      checked={hidePaid}
+                      onCheckedChange={(checked) =>
+                        setHidePaid(checked as boolean)
+                      }
+                    />
+                    <label
+                      htmlFor="hidePaid"
+                      className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      Esconder contas pagas
+                    </label>
+                  </div>
 
                   {/* Clear Filters */}
                   {hasActiveFilters && (
-                    <div className="flex items-end">
-                      <Button
-                        variant="outline"
-                        onClick={clearFilters}
-                        className="w-full"
-                      >
+                    <div className="flex justify-self-end">
+                      <Button variant="outline" onClick={clearFilters}>
                         <X className="mr-2 h-4 w-4" />
                         Limpar Filtros
                       </Button>
@@ -881,7 +907,7 @@ export default function Transactions() {
               aria-label="Selecionar todas"
               id="selectAll"
             />
-            <label htmlFor="selectAll" className="text-sm font-medium">
+            <label htmlFor="selectAll" className="text-sm">
               Selecionar todas ({paginatedTransactions.length})
             </label>
           </div>
