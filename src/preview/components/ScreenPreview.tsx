@@ -92,7 +92,7 @@ export function ScreenPreview({ screen }: ScreenPreviewProps) {
                 <div className="w-2.5 h-2.5 rounded-full bg-green-500/80 transition-all duration-300 group-hover:bg-green-500" />
               </div>
               <div className="flex-1 bg-slate-950/50 rounded-md py-1 px-3 text-[10px] text-slate-500 text-center font-mono truncate">
-                {window.location.hostname}/{screen.id}
+                gestao-financeira/{screen.id}
               </div>
             </div>
 
