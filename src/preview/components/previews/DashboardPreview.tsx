@@ -3,7 +3,6 @@ import {
   ArrowUpCircle,
   CheckCircle,
   DollarSign,
-  TrendingUp,
 } from "lucide-react";
 
 export function DashboardPreview() {
@@ -24,7 +23,7 @@ export function DashboardPreview() {
         </div>
 
         {/* Grid de Cards de Resumo */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <div className="rounded-xl bg-white p-4 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-white/5">
             <div className="flex items-center justify-between pb-2">
               <span className="text-slate-500 text-xs font-medium dark:text-slate-400">
@@ -56,19 +55,6 @@ export function DashboardPreview() {
             </div>
             <div className="text-2xl font-bold text-green-600">R$ 4.090</div>
             <p className="text-[10px] text-slate-500 mt-1">Líquido</p>
-          </div>
-
-          <div className="rounded-xl bg-white p-4 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-white/5">
-            <div className="flex items-center justify-between pb-2">
-              <span className="text-slate-500 text-xs font-medium dark:text-slate-400">
-                Variação
-              </span>
-              <TrendingUp className="h-4 w-4 text-green-600" />
-            </div>
-            <div className="text-2xl font-bold text-green-600">+12%</div>
-            <p className="text-[10px] text-slate-500 mt-1">
-              vs. período anterior
-            </p>
           </div>
         </div>
 
@@ -116,7 +102,7 @@ export function DashboardPreview() {
           {/* Table View (Desktop) */}
           <div className="hidden md:block rounded-xl bg-white border border-slate-200 shadow-sm overflow-hidden dark:bg-slate-900 dark:border-white/5">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-[11px] border-collapse min-w-[500px]">
+              <table className="w-full text-left text-[11px] border-collapse min-w-125">
                 <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-bold uppercase tracking-wider text-[9px]">
                   <tr>
                     <th className="px-4 py-3">Descrição</th>

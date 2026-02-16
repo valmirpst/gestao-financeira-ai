@@ -50,7 +50,7 @@ export function AccountsPreview() {
           ].map((acc, i) => (
             <div
               key={i}
-              className="bg-white border border-slate-200 rounded-2xl overflow-hidden dark:bg-slate-900 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow"
+              className="grid bg-white border border-slate-200 rounded-2xl overflow-hidden dark:bg-slate-900 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="p-5">
                 <div className="flex justify-between items-start mb-4">
@@ -101,7 +101,7 @@ export function AccountsPreview() {
 
         {/* Informação Adicional Fidedigna */}
         <div className="mt-4 p-4 rounded-xl border border-blue-200 bg-blue-50/50 dark:border-blue-900/30 dark:bg-blue-900/10">
-          <p className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed font-medium">
+          <p className="text-xs opacity-90 text-blue-700 dark:text-blue-400 leading-relaxed font-medium">
             Os saldos exibidos são baseados nas transações registradas em cada
             conta. Você pode sincronizar os saldos a qualquer momento no menu de
             cada conta.

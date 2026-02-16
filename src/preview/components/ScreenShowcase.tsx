@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollReveal } from "../../components/ScrollReveal";
 import { ScreenPreview } from "./ScreenPreview";
 
 const screens = [
@@ -73,7 +74,8 @@ export function ScreenShowcase() {
   return (
     <section className="relative px-6 py-24 lg:py-32 bg-slate-950/50 overflow-x-hidden">
       <div className="container mx-auto max-w-7xl">
-        <div className="text-center space-y-4 mb-16">
+        {/* Animated header with scroll reveal */}
+        <ScrollReveal className="text-center space-y-4 mb-16" duration={0.6}>
           <h2 className="text-4xl md:text-5xl font-bold text-white">
             Conheça as{" "}
             <span className="bg-linear-to-r from-blue-400 to-purple-400 text-transparent bg-clip-text">
@@ -84,24 +86,28 @@ export function ScreenShowcase() {
             Interface moderna e intuitiva para você gerenciar suas finanças com
             facilidade
           </p>
-        </div>
+        </ScrollReveal>
 
         <Tabs defaultValue="dashboard" className="space-y-12">
-          <div className="flex md:justify-center overflow-hidden">
+          {/* Animated tabs container with scroll reveal */}
+          <ScrollReveal
+            className="flex md:justify-center overflow-hidden"
+            delay={0.2}
+          >
             <div className="w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth">
-              <TabsList className="inline-flex h-auto p-1 bg-slate-900/50 border border-slate-800 rounded-xl md:rounded-2xl gap-1 min-w-full md:min-w-0">
+              <TabsList className="inline-flex h-auto p-1 bg-slate-900/50 border border-slate-800 rounded-xl md:rounded-2xl gap-2 min-w-full md:min-w-0">
                 {screens.map((screen) => (
                   <TabsTrigger
                     key={screen.id}
                     value={screen.id}
-                    className="shrink-0 data-[state=active]:bg-linear-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/20 text-slate-400 rounded-lg md:rounded-xl py-2.5 px-4 md:py-3 md:px-6 text-sm font-medium transition-all whitespace-nowrap"
+                    className="shrink-0 data-[state=active]:bg-linear-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/20 data-[state=active]:scale-105 text-slate-400 rounded-lg md:rounded-xl py-2.5 px-4 md:py-3 md:px-6 text-sm font-medium transition-all duration-300 hover:scale-105 hover:text-slate-200 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     {screen.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
             </div>
-          </div>
+          </ScrollReveal>
 
           {screens.map((screen) => (
             <TabsContent
