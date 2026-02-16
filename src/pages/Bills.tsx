@@ -79,7 +79,7 @@ import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 type StatusFilter = "all" | "pending" | "overdue";
-type PeriodFilter = "this_month" | "30days" | "overdue" | "custom";
+type PeriodFilter = "this_month" | "next_month" | "overdue" | "custom";
 
 const statusLabels: Record<TransactionStatus, string> = {
   pending: "Pendente",
@@ -142,10 +142,10 @@ export default function Bills() {
           from: format(startOfMonth(today), "yyyy-MM-dd"),
           to: format(endOfMonth(today), "yyyy-MM-dd"),
         };
-      case "30days":
+      case "next_month":
         return {
-          from: format(today, "yyyy-MM-dd"),
-          to: format(addDays(today, 30), "yyyy-MM-dd"),
+          from: format(startOfMonth(addDays(today, 30)), "yyyy-MM-dd"),
+          to: format(endOfMonth(addDays(today, 30)), "yyyy-MM-dd"),
         };
       case "overdue":
         return {
@@ -164,6 +164,7 @@ export default function Bills() {
     }
   }, [periodFilter, customDateRange]);
 
+  console.log(dateRange);
   // Fetch transactions
   const { data: allTransactions = [] } = useTransactions({
     type: activeTab,
@@ -207,10 +208,10 @@ export default function Bills() {
 
   // Calculate summary
   const summary = useMemo(() => {
-    const expenseTransactions = allTransactions.filter(
+    const expenseTransactions = filteredTransactions.filter(
       (t) => t.type === "expense",
     );
-    const incomeTransactions = allTransactions.filter(
+    const incomeTransactions = filteredTransactions.filter(
       (t) => t.type === "income",
     );
 
@@ -476,7 +477,7 @@ export default function Bills() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="this_month">Este mês</SelectItem>
-                        <SelectItem value="30days">Próximos 30 dias</SelectItem>
+                        <SelectItem value="next_month">Próximo mês</SelectItem>
                         <SelectItem value="overdue">Vencidas</SelectItem>
                         <SelectItem value="custom">Customizado</SelectItem>
                       </SelectContent>

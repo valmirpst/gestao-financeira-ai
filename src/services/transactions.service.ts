@@ -309,6 +309,39 @@ export async function markAsPaid(
 }
 
 /**
+ * Marca múltiplas transações como pagas
+ */
+export async function markMultipleAsPaid(
+  ids: string[],
+  paymentDate?: string,
+): Promise<void> {
+  try {
+    const date = paymentDate || new Date().toISOString().split("T")[0];
+
+    // Chamamos o RPC para cada transação para garantir que as atualizações de saldo ocorram corretamente
+    // Se houver muitas transações, isso pode ser lento, mas para o uso típico de lote pequeno é aceitável
+    const promises = ids.map((id) =>
+      supabase.rpc("mark_transaction_as_paid", {
+        p_transaction_id: id,
+        p_payment_date: date,
+      }),
+    );
+
+    const results = await Promise.all(promises);
+
+    const errors = results.filter((r) => r.error).map((r) => r.error);
+    if (errors.length > 0) {
+      throw new Error(
+        `Erro ao marcar transações como pagas: ${errors[0]?.message}`,
+      );
+    }
+  } catch (error) {
+    console.error("markMultipleAsPaid error:", error);
+    throw error;
+  }
+}
+
+/**
  * Busca transações recentes
  */
 export async function getRecentTransactions(

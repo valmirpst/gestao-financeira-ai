@@ -1,4 +1,5 @@
 import { MarkAsPaidDialog } from "@/components/bills/MarkAsPaidDialog";
+import { MarkMultipleAsPaidDialog } from "@/components/transactions/MarkMultipleAsPaidDialog";
 import { TransactionCard } from "@/components/transactions/TransactionCard";
 import { TransactionDialog } from "@/components/transactions/TransactionDialog";
 import {
@@ -142,6 +143,8 @@ export default function Transactions() {
 
   // Mark as paid dialog state
   const [markAsPaidDialogOpen, setMarkAsPaidDialogOpen] = useState(false);
+  const [markMultipleAsPaidDialogOpen, setMarkMultipleAsPaidDialogOpen] =
+    useState(false);
   const [transactionToMarkAsPaid, setTransactionToMarkAsPaid] =
     useState<Transaction | null>(null);
 
@@ -239,6 +242,9 @@ export default function Transactions() {
 
     const total = income - expense;
     const average = count > 0 ? total / count : 0;
+    const hasPaidSelected = selectedTransactions.some(
+      (t) => t.status === "paid",
+    );
 
     return {
       count,
@@ -246,6 +252,7 @@ export default function Transactions() {
       expense,
       total,
       average,
+      hasPaidSelected,
     };
   }, [paginatedTransactions, selectedTransactionIds]);
 
@@ -317,6 +324,10 @@ export default function Transactions() {
   const handleOpenMarkAsPaidDialog = (transaction: Transaction) => {
     setTransactionToMarkAsPaid(transaction);
     setMarkAsPaidDialogOpen(true);
+  };
+
+  const handleOpenMarkMultipleAsPaidDialog = () => {
+    setMarkMultipleAsPaidDialogOpen(true);
   };
 
   const clearFilters = () => {
@@ -405,14 +416,14 @@ export default function Transactions() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Transações</h1>
           <p className="text-muted-foreground">
             Gerencie todas as suas transações financeiras
           </p>
         </div>
-        <Button onClick={handleOpenCreateDialog}>
+        <Button onClick={handleOpenCreateDialog} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Nova Transação
         </Button>
@@ -1048,6 +1059,17 @@ export default function Transactions() {
         onOpenChange={setMarkAsPaidDialogOpen}
       />
 
+      {/* Mark Multiple as Paid Dialog */}
+      <MarkMultipleAsPaidDialog
+        transactionIds={Array.from(selectedTransactionIds)}
+        totalAmount={paginatedTransactions
+          .filter((t) => selectedTransactionIds.has(t.id))
+          .reduce((sum, t) => sum + t.amount, 0)}
+        open={markMultipleAsPaidDialogOpen}
+        onOpenChange={setMarkMultipleAsPaidDialogOpen}
+        onSuccess={() => setSelectedTransactionIds(new Set())}
+      />
+
       {/* Delete Confirmation Dialog */}
       <AlertDialog
         open={!!transactionToDelete}
@@ -1167,6 +1189,19 @@ export default function Transactions() {
                     {formatCurrency(selectedTotals.average)}
                   </span>
                 </div>
+                {/* Actions for Selected Transactions */}
+                {!selectedTotals.hasPaidSelected && (
+                  <div className="flex items-center gap-2 border-l pl-3 ml-3 sm:pl-6 sm:ml-6">
+                    <Button
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      onClick={handleOpenMarkMultipleAsPaidDialog}
+                    >
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      Marcar como Pagas
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

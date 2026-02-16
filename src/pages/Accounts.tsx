@@ -176,30 +176,32 @@ export default function Accounts() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Contas</h1>
           <p className="text-muted-foreground">
             Gerencie suas contas e transferências
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             onClick={handleSyncBalances}
             disabled={isSyncing}
-            className="hidden sm:flex"
+            size="icon"
+            title="Sincronizar saldos"
+            aria-label="Sincronizar saldos"
           >
             <RefreshCw
-              className={`mr-2 h-4 w-4 ${isSyncing ? "animate-spin" : ""}`}
+              className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`}
             />
-            {isSyncing ? "Sincronizando..." : "Sincronizar"}
           </Button>
           <Button variant="outline" onClick={handleOpenTransferDialog}>
             <ArrowLeftRight className="mr-2 h-4 w-4" />
-            Nova Transferência
+            <span className="hidden sm:inline">Nova Transferência</span>
+            <span className="sm:hidden">Transferir</span>
           </Button>
-          <Button onClick={handleOpenCreateDialog}>
+          <Button onClick={handleOpenCreateDialog} className="ml-auto sm:ml-0">
             <Plus className="mr-2 h-4 w-4" />
             Nova Conta
           </Button>

@@ -79,17 +79,19 @@ export default function Budgets() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Orçamentos</h1>
           <p className="text-muted-foreground">
             Controle seus gastos definindo limites por categoria
           </p>
         </div>
-        <Button onClick={handleNewBudget}>
-          <Plus className="mr-2 h-4 w-4" />
-          Novo Orçamento
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button onClick={handleNewBudget} className="w-full sm:w-auto">
+            <Plus className="mr-2 h-4 w-4" />
+            Novo Orçamento
+          </Button>
+        </div>
       </div>
 
       {/* Alert for exceeded budgets */}

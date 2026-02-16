@@ -382,7 +382,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Header com filtro de período */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">Visão geral das suas finanças</p>
@@ -392,7 +392,7 @@ export default function Dashboard() {
           value={period}
           onValueChange={(value) => setPeriod(value as PeriodType)}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Selecione o período" />
           </SelectTrigger>
           <SelectContent>

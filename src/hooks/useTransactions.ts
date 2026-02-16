@@ -132,3 +132,24 @@ export function useMarkAsPaid() {
     },
   });
 }
+/**
+ * Hook para marcar múltiplas transações como pagas
+ */
+export function useMarkMultipleAsPaid() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, { ids: string[]; paymentDate?: string }>({
+    mutationFn: ({ ids, paymentDate }) =>
+      transactionsService.markMultipleAsPaid(ids, paymentDate),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      toast.success("Transações marcadas como pagas!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao marcar transações como pagas");
+    },
+  });
+}
