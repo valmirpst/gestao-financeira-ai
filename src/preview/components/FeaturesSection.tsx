@@ -78,7 +78,7 @@ const itemVariants = {
 
 export function FeaturesSection() {
   return (
-    <section className="relative px-6 py-24 lg:py-32">
+    <section className="relative px-4 sm:px-6 py-24 lg:py-32">
       <div className="container mx-auto max-w-7xl">
         {/* Animated header with scroll reveal */}
         <ScrollReveal className="text-center space-y-4 mb-16" duration={0.6}>

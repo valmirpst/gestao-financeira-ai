@@ -37,7 +37,7 @@ export function ScreenPreview({ screen }: ScreenPreviewProps) {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-12 lg:items-center">
+    <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 lg:items-center">
       {/* Left side - Description */}
       <div className="space-y-6 order-2 lg:order-1">
         {/* Badge and content with scroll reveal */}
@@ -76,7 +76,7 @@ export function ScreenPreview({ screen }: ScreenPreviewProps) {
         key={`${screen.id}-mockup`}
         direction="right"
         delay={0.2}
-        className="order-1 lg:order-2 w-full"
+        className="order-1 lg:order-2 w-full max-w-2xl mx-auto lg:max-w-none"
       >
         <div className="relative group">
           {/* Enhanced animated glow effect */}
@@ -97,8 +97,8 @@ export function ScreenPreview({ screen }: ScreenPreviewProps) {
             </div>
 
             {/* Content Area - Fixed height on mobile to prevent "getting lost" */}
-            <div className="h-100 md:h-112.5 lg:h-125 overflow-y-auto overflow-x-auto no-scrollbar bg-background">
-              <div className="w-full min-w-70">{renderPreview()}</div>
+            <div className="h-72 sm:h-80 md:h-112 lg:h-125 overflow-y-auto overflow-x-auto no-scrollbar bg-background scroll-smooth">
+              <div className="w-full">{renderPreview()}</div>
             </div>
           </div>
         </div>

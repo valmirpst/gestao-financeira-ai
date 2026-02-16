@@ -72,7 +72,7 @@ const screens = [
 
 export function ScreenShowcase() {
   return (
-    <section className="relative px-6 py-24 lg:py-32 bg-slate-950/50 overflow-x-hidden">
+    <section className="relative px-4 sm:px-6 py-24 lg:py-32 bg-slate-950/50 overflow-x-hidden">
       <div className="container mx-auto max-w-7xl">
         {/* Animated header with scroll reveal */}
         <ScrollReveal className="text-center space-y-4 mb-16" duration={0.6}>

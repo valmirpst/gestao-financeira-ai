@@ -79,7 +79,9 @@ export default function Login() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Gestão Financeira
+            <Link to="/preview">
+              <h1 className="text-xl font-bold">Gestão Financeira</h1>
+            </Link>
           </CardTitle>
           <CardDescription className="text-center">
             Entre com sua conta para continuar

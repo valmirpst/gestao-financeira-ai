@@ -7,7 +7,7 @@ export function HeroSection() {
   const navigate = useNavigate();
 
   return (
-    <section className="relative overflow-hidden px-6 pt-20 pb-32 lg:pt-32 lg:pb-40">
+    <section className="relative overflow-hidden px-4 sm:px-6 pt-20 pb-32 lg:pt-32 lg:pb-40">
       {/* Animated gradient background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.15),transparent_50%)]" />
