@@ -107,7 +107,11 @@ export function MobileNav() {
             </SheetTrigger>
             <SheetContent side="left" className="w-[80vw] sm:w-[350px] p-0">
               <SheetHeader className="p-6 border-b">
-                <SheetTitle className="text-left">Gestão Financeira</SheetTitle>
+                <SheetTitle className="text-left">
+                  <Link to="/preview">
+                    <h1 className="text-xl font-bold">Gestão Financeira</h1>
+                  </Link>
+                </SheetTitle>
               </SheetHeader>
               <motion.nav
                 className="flex flex-col p-4 space-y-2"
