@@ -1,0 +1,16 @@
+User-agent: *
+# Auth pages (public but should not be indexed)
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# App (protected) sections
+Disallow: /dashboard/
+Disallow: /transactions/
+Disallow: /bills/
+Disallow: /categories/
+Disallow: /accounts/
+Disallow: /budgets/
+
+Sitemap: https://gestao-financeira-ai-one.vercel.app/sitemap.xml
