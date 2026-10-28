@@ -83,13 +83,17 @@ export function ScreenShowcase() {
             </span>
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Interface moderna e intuitiva para você gerenciar suas finanças com facilidade
+            Interface moderna e intuitiva para você gerenciar suas finanças com
+            facilidade
           </p>
         </ScrollReveal>
 
         <Tabs defaultValue="dashboard" className="space-y-12">
           {/* Animated tabs container with scroll reveal */}
-          <ScrollReveal className="flex md:justify-center overflow-hidden" delay={0.2}>
+          <ScrollReveal
+            className="flex md:justify-center overflow-hidden"
+            delay={0.2}
+          >
             <div className="w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth">
               <TabsList className="inline-flex h-auto p-1 bg-slate-900/50 border border-slate-800 rounded-xl md:rounded-2xl gap-2 min-w-full md:min-w-0">
                 {screens.map((screen) => (
@@ -106,7 +110,11 @@ export function ScreenShowcase() {
           </ScrollReveal>
 
           {screens.map((screen) => (
-            <TabsContent key={screen.id} value={screen.id} className="space-y-8">
+            <TabsContent
+              key={screen.id}
+              value={screen.id}
+              className="space-y-8"
+            >
               <ScreenPreview screen={screen} />
             </TabsContent>
           ))}

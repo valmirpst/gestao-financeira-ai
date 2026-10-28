@@ -88,8 +88,7 @@ export function TransactionDialog({
         // Map database status to form-compatible values
         // Form only accepts "paid" or "pending"
         status: (transaction.status === "paid" ? "paid" : "pending") as
-          | "paid"
-          | "pending",
+          "paid" | "pending",
         payment_date: transaction.payment_date
           ? parseDateSafe(transaction.payment_date)
           : transaction.is_recurring

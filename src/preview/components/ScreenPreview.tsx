@@ -1,7 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle } from "lucide-react";
 import { ScrollReveal } from "../../components/ScrollReveal";
-import { AccountsPreview, BillsPreview, CategoriesPreview, DashboardPreview, TransactionsPreview } from "./previews";
+import {
+  AccountsPreview,
+  BillsPreview,
+  CategoriesPreview,
+  DashboardPreview,
+  TransactionsPreview,
+} from "./previews";
 
 interface ScreenPreviewProps {
   screen: {
@@ -39,14 +45,23 @@ export function ScreenPreview({ screen }: ScreenPreviewProps) {
           <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20 px-3 py-1 transition-colors duration-200">
             {screen.id.toUpperCase()}
           </Badge>
-          <h3 className="text-3xl md:text-4xl font-bold text-white tracking-tight">{screen.title}</h3>
-          <p className="text-lg text-slate-400 leading-relaxed">{screen.description}</p>
+          <h3 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+            {screen.title}
+          </h3>
+          <p className="text-lg text-slate-400 leading-relaxed">
+            {screen.description}
+          </p>
         </ScrollReveal>
 
         {/* Features with scroll reveal */}
         <div className="grid gap-3 pt-4">
           {screen.features.map((feature, index) => (
-            <ScrollReveal key={index} direction="left" delay={index * 0.1} className="flex items-center gap-3">
+            <ScrollReveal
+              key={index}
+              direction="left"
+              delay={index * 0.1}
+              className="flex items-center gap-3"
+            >
               <div className="p-1 rounded-full bg-green-400/10 group-hover:bg-green-400/20 transition-colors duration-300">
                 <CheckCircle className="w-4 h-4 text-green-400" />
               </div>

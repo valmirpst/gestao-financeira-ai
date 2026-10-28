@@ -463,7 +463,9 @@ export default function Transactions() {
             <p
               className={cn(
                 "mt-2 text-2xl font-bold",
-                totals.balance >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400",
+                totals.balance >= 0
+                  ? "text-emerald-700 dark:text-emerald-400"
+                  : "text-red-700 dark:text-red-400",
               )}
             >
               {formatCurrency(totals.balance)}

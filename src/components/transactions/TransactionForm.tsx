@@ -40,25 +40,36 @@ import { z } from "zod";
 const transactionSchema = z
   .object({
     type: z.enum(["income", "expense"], {
-      error: (issue) => issue.input === undefined ? "Selecione se é uma entrada ou saída" : undefined,
+      error: (issue) =>
+        issue.input === undefined
+          ? "Selecione se é uma entrada ou saída"
+          : undefined,
     }),
     amount: z
       .number({
-        error: (issue) => issue.input === undefined ? "Informe o valor" : "Digite um valor válido",
+        error: (issue) =>
+          issue.input === undefined
+            ? "Informe o valor"
+            : "Digite um valor válido",
       })
       .positive("O valor deve ser maior que zero"),
     description: z
       .string({
-        error: (issue) => issue.input === undefined ? "Informe uma descrição" : undefined,
+        error: (issue) =>
+          issue.input === undefined ? "Informe uma descrição" : undefined,
       })
       .min(3, "A descrição deve ter pelo menos 3 caracteres")
       .max(200, "A descrição é muito longa (máximo 200 caracteres)"),
     category_id: z.string().optional(),
     account_id: z.string({
-      error: (issue) => issue.input === undefined ? "Selecione uma conta" : undefined,
+      error: (issue) =>
+        issue.input === undefined ? "Selecione uma conta" : undefined,
     }),
     status: z.enum(["paid", "pending"], {
-      error: (issue) => issue.input === undefined ? "Informe se foi pago ou está pendente" : undefined,
+      error: (issue) =>
+        issue.input === undefined
+          ? "Informe se foi pago ou está pendente"
+          : undefined,
     }),
     payment_date: z.date().optional(),
     due_date: z.date().optional(),
@@ -156,7 +167,11 @@ export function TransactionForm({
   const { data: accounts = [] } = useActiveAccounts();
 
   // Form setup
-  const form = useForm<z.input<typeof transactionSchema>, unknown, TransactionFormValues>({
+  const form = useForm<
+    z.input<typeof transactionSchema>,
+    unknown,
+    TransactionFormValues
+  >({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: "expense",

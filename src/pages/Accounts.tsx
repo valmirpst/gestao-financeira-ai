@@ -110,7 +110,9 @@ export default function Accounts() {
             <p className="text-sm text-muted-foreground mb-1">Saldo Atual</p>
             <p
               className={`text-3xl font-bold ${
-                isPositive ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"
+                isPositive
+                  ? "text-emerald-700 dark:text-emerald-400"
+                  : "text-red-700 dark:text-red-400"
               }`}
             >
               {formatCurrency(account.current_balance)}

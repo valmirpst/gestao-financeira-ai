@@ -8,10 +8,12 @@ export function HeroSection() {
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
         <div className="hero-entrance max-w-xl">
           <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight text-[#15352f] sm:text-5xl lg:text-6xl">
-            Organize suas finanças <span className="text-emerald-700">em um só lugar.</span>
+            Organize suas finanças{" "}
+            <span className="text-emerald-700">em um só lugar.</span>
           </h1>
           <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">
-            Registre receitas e despesas, acompanhe suas contas e veja como seu dinheiro está sendo usado.
+            Registre receitas e despesas, acompanhe suas contas e veja como seu
+            dinheiro está sendo usado.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link

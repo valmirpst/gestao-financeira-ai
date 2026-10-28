@@ -6,8 +6,12 @@ export function CallToActionSection() {
     <section className="px-5 pb-20 sm:px-8 lg:px-10">
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 rounded-xl bg-[#123e36] px-7 py-10 text-white sm:px-12 sm:py-12 md:flex-row md:items-center">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Comece a organizar seu dinheiro hoje.</h2>
-          <p className="mt-3 text-emerald-100">Tenha suas informações financeiras sempre à mão.</p>
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            Comece a organizar seu dinheiro hoje.
+          </h2>
+          <p className="mt-3 text-emerald-100">
+            Tenha suas informações financeiras sempre à mão.
+          </p>
         </div>
         <Link
           to="/register"

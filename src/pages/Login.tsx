@@ -1,7 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Brand } from "@/components/Brand";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,12 +28,14 @@ import { z } from "zod";
 const loginSchema = z.object({
   email: z
     .string({
-      error: (issue) => (issue.input === undefined ? "Email é obrigatório" : undefined),
+      error: (issue) =>
+        issue.input === undefined ? "Email é obrigatório" : undefined,
     })
     .email("Email inválido"),
   password: z
     .string({
-      error: (issue) => (issue.input === undefined ? "Senha é obrigatória" : undefined),
+      error: (issue) =>
+        issue.input === undefined ? "Senha é obrigatória" : undefined,
     })
     .min(6, "Senha deve ter no mínimo 6 caracteres"),
 });
@@ -68,7 +84,9 @@ export default function Login() {
           <CardTitle className="text-2xl font-bold text-center">
             <Brand />
           </CardTitle>
-          <CardDescription className="text-center">Entre com sua conta para continuar</CardDescription>
+          <CardDescription className="text-center">
+            Entre com sua conta para continuar
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -80,7 +98,11 @@ export default function Login() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="seu@email.com" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="seu@email.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -101,14 +123,21 @@ export default function Login() {
                 )}
               />
 
-              <Button type="submit" className="w-full" loading={form.formState.isSubmitting}>
+              <Button
+                type="submit"
+                className="w-full"
+                loading={form.formState.isSubmitting}
+              >
                 Entrar
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
-          <Link to="/forgot-password" className="text-sm text-muted-foreground hover:text-primary text-center">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-muted-foreground hover:text-primary text-center"
+          >
             Esqueci minha senha
           </Link>
           <div className="text-sm text-center text-muted-foreground">

@@ -8,7 +8,10 @@ export function PreviewHeader() {
         aria-label="Navegação principal"
         className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-10"
       >
-        <Link to="/preview" className="flex items-center gap-2.5 text-sm font-bold tracking-tight sm:text-base">
+        <Link
+          to="/preview"
+          className="flex items-center gap-2.5 text-sm font-bold tracking-tight sm:text-base"
+        >
           <span className="grid size-9 place-items-center rounded-xl bg-[#123e36] text-white">
             <Layers3 size={19} />
           </span>{" "}
@@ -21,7 +24,10 @@ export function PreviewHeader() {
           >
             Recursos
           </a>
-          <Link to="/login" className="text-sm font-semibold text-slate-700 hover:text-emerald-800">
+          <Link
+            to="/login"
+            className="text-sm font-semibold text-slate-700 hover:text-emerald-800"
+          >
             Entrar
           </Link>
           <Link

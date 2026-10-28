@@ -451,7 +451,9 @@ export default function Dashboard() {
           <CardContent>
             <div
               className={`text-2xl font-bold ${
-                currentBalance >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"
+                currentBalance >= 0
+                  ? "text-emerald-700 dark:text-emerald-400"
+                  : "text-red-700 dark:text-red-400"
               }`}
             >
               {isLoading ? "..." : formatCurrency(currentBalance)}
@@ -476,7 +478,9 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <span
                 className={`text-2xl font-bold ${
-                  isPositiveVariation ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"
+                  isPositiveVariation
+                    ? "text-emerald-700 dark:text-emerald-400"
+                    : "text-red-700 dark:text-red-400"
                 }`}
               >
                 {isLoading
@@ -526,7 +530,9 @@ export default function Dashboard() {
           <CardContent>
             <div
               className={`text-2xl font-bold ${
-                billsSummary.overdueToPay > 0 ? "text-red-700 dark:text-red-400" : ""
+                billsSummary.overdueToPay > 0
+                  ? "text-red-700 dark:text-red-400"
+                  : ""
               }`}
             >
               {formatCurrency(billsSummary.toPay)}

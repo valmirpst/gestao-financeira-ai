@@ -8,10 +8,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useActiveAccounts, useCreateTransfer } from "@/hooks/useAccounts";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,27 +43,37 @@ import { z } from "zod";
 const transferSchema = z
   .object({
     from_account_id: z.string({
-      error: (issue) => (issue.input === undefined ? "Conta de origem é obrigatória" : undefined),
+      error: (issue) =>
+        issue.input === undefined ? "Conta de origem é obrigatória" : undefined,
     }),
     to_account_id: z.string({
-      error: (issue) => (issue.input === undefined ? "Conta de destino é obrigatória" : undefined),
+      error: (issue) =>
+        issue.input === undefined
+          ? "Conta de destino é obrigatória"
+          : undefined,
     }),
     amount: z
       .number({
-        error: (issue) => (issue.input === undefined ? "Valor é obrigatório" : "Valor deve ser um número"),
+        error: (issue) =>
+          issue.input === undefined
+            ? "Valor é obrigatório"
+            : "Valor deve ser um número",
       })
       .positive("Valor deve ser maior que zero"),
     date: z.date({
-      error: (issue) => (issue.input === undefined ? "Data é obrigatória" : undefined),
+      error: (issue) =>
+        issue.input === undefined ? "Data é obrigatória" : undefined,
     }),
     description: z
       .string({
-        error: (issue) => (issue.input === undefined ? "Descrição é obrigatória" : undefined),
+        error: (issue) =>
+          issue.input === undefined ? "Descrição é obrigatória" : undefined,
       })
       .min(3, "Descrição deve ter no mínimo 3 caracteres")
       .max(200, "Descrição deve ter no máximo 200 caracteres"),
     status: z.enum(["paid", "pending"], {
-      error: (issue) => (issue.input === undefined ? "Status é obrigatório" : undefined),
+      error: (issue) =>
+        issue.input === undefined ? "Status é obrigatório" : undefined,
     }),
     due_date: z.date().optional(),
   })
@@ -107,7 +134,9 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
         date: format(values.date, "yyyy-MM-dd"),
         description: values.description,
         status: values.status,
-        dueDate: values.due_date ? format(values.due_date, "yyyy-MM-dd") : undefined,
+        dueDate: values.due_date
+          ? format(values.due_date, "yyyy-MM-dd")
+          : undefined,
       };
 
       await createTransferMutation.mutateAsync(data);
@@ -129,11 +158,16 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nova Transferência</DialogTitle>
-          <DialogDescription>Transfira valores entre suas contas.</DialogDescription>
+          <DialogDescription>
+            Transfira valores entre suas contas.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             {/* Conta de Origem */}
             <FormField
               control={form.control}
@@ -202,7 +236,9 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
                       placeholder="0,00"
                       {...field}
                       value={field.value || ""}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value))
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -232,7 +268,9 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
                       </Button>
                       <Button
                         type="button"
-                        variant={field.value === "pending" ? "default" : "outline"}
+                        variant={
+                          field.value === "pending" ? "default" : "outline"
+                        }
                         className="flex-1"
                         onClick={() => field.onChange("pending")}
                       >
@@ -257,7 +295,10 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
                       <FormControl>
                         <Button
                           variant="outline"
-                          className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                          className={cn(
+                            "pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground",
+                          )}
                         >
                           {field.value ? (
                             format(field.value, "dd/MM/yyyy", { locale: ptBR })
@@ -269,7 +310,12 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} locale={ptBR} />
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        locale={ptBR}
+                      />
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -290,7 +336,10 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
                         <FormControl>
                           <Button
                             variant="outline"
-                            className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                            className={cn(
+                              "pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
                           >
                             {field.value ? (
                               format(field.value, "dd/MM/yyyy", {
@@ -304,7 +353,12 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} locale={ptBR} />
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          locale={ptBR}
+                        />
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -321,7 +375,10 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
                 <FormItem>
                   <FormLabel>Descrição *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Transferência para poupança" {...field} />
+                    <Input
+                      placeholder="Ex: Transferência para poupança"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -339,8 +396,14 @@ export function TransferDialog({ open, onOpenChange }: TransferDialogProps) {
               >
                 Cancelar
               </Button>
-              <Button type="submit" className="w-full sm:w-auto" disabled={createTransferMutation.isPending}>
-                {createTransferMutation.isPending ? "Criando..." : "Criar Transferência"}
+              <Button
+                type="submit"
+                className="w-full sm:w-auto"
+                disabled={createTransferMutation.isPending}
+              >
+                {createTransferMutation.isPending
+                  ? "Criando..."
+                  : "Criar Transferência"}
               </Button>
             </DialogFooter>
           </form>

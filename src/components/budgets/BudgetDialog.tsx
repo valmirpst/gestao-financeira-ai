@@ -8,10 +8,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCreateBudget, useUpdateBudget } from "@/hooks/useBudgets";
 import { useCategories } from "@/hooks/useCategories";
 import { cn, parseDateSafe } from "@/lib/utils";
@@ -29,14 +47,19 @@ const budgetSchema = z.object({
   category_id: z.string().optional(),
   amount: z.coerce
     .number<number>({
-      error: (issue) => (issue.input === undefined ? "Valor é obrigatório" : "Valor deve ser um número"),
+      error: (issue) =>
+        issue.input === undefined
+          ? "Valor é obrigatório"
+          : "Valor deve ser um número",
     })
     .positive("Valor deve ser maior que zero"),
   period: z.enum(["monthly", "weekly", "yearly", "custom"], {
-    error: (issue) => (issue.input === undefined ? "Período é obrigatório" : undefined),
+    error: (issue) =>
+      issue.input === undefined ? "Período é obrigatório" : undefined,
   }),
   start_date: z.date({
-    error: (issue) => (issue.input === undefined ? "Data de início é obrigatória" : undefined),
+    error: (issue) =>
+      issue.input === undefined ? "Data de início é obrigatória" : undefined,
   }),
   end_date: z.date().optional(),
 });
@@ -49,7 +72,11 @@ interface BudgetDialogProps {
   budget?: BudgetWithUsage | null;
 }
 
-export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) {
+export function BudgetDialog({
+  open,
+  onOpenChange,
+  budget,
+}: BudgetDialogProps) {
   const { data: categories = [] } = useCategories();
   const createBudget = useCreateBudget();
   const updateBudget = useUpdateBudget();
@@ -91,11 +118,16 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
   const onSubmit = async (values: BudgetFormValues) => {
     try {
       const data = {
-        category_id: values.category_id && values.category_id !== "__none__" ? values.category_id : null,
+        category_id:
+          values.category_id && values.category_id !== "__none__"
+            ? values.category_id
+            : null,
         amount: values.amount,
         period: values.period as BudgetPeriod,
         start_date: format(values.start_date, "yyyy-MM-dd"),
-        end_date: values.end_date ? format(values.end_date, "yyyy-MM-dd") : null,
+        end_date: values.end_date
+          ? format(values.end_date, "yyyy-MM-dd")
+          : null,
       };
 
       if (isEditing) {
@@ -112,7 +144,9 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
       onOpenChange(false);
       form.reset();
     } catch (error) {
-      toast.error(isEditing ? "Erro ao atualizar orçamento" : "Erro ao criar orçamento");
+      toast.error(
+        isEditing ? "Erro ao atualizar orçamento" : "Erro ao criar orçamento",
+      );
     }
   };
 
@@ -122,7 +156,9 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Editar Orçamento" : "Novo Orçamento"}</DialogTitle>
+          <DialogTitle>
+            {isEditing ? "Editar Orçamento" : "Novo Orçamento"}
+          </DialogTitle>
           <DialogDescription>
             {isEditing
               ? "Atualize as informações do orçamento"
@@ -151,9 +187,14 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="__none__">Geral (todas as categorias)</SelectItem>
+                      <SelectItem value="__none__">
+                        Geral (todas as categorias)
+                      </SelectItem>
                       {categories
-                        .filter((cat) => cat.type === "expense" || cat.type === "both")
+                        .filter(
+                          (cat) =>
+                            cat.type === "expense" || cat.type === "both",
+                        )
                         .map((category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
@@ -161,7 +202,9 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
                         ))}
                     </SelectContent>
                   </Select>
-                  <FormDescription>Deixe em branco para orçamento geral</FormDescription>
+                  <FormDescription>
+                    Deixe em branco para orçamento geral
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -175,7 +218,12 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
                 <FormItem>
                   <FormLabel>Valor do Orçamento</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -219,7 +267,10 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
                       <FormControl>
                         <Button
                           variant="outline"
-                          className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground",
+                          )}
                         >
                           {field.value ? (
                             format(field.value, "dd/MM/yyyy", { locale: ptBR })
@@ -231,7 +282,12 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} locale={ptBR} />
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        locale={ptBR}
+                      />
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -252,7 +308,10 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
                         <FormControl>
                           <Button
                             variant="outline"
-                            className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
                           >
                             {field.value ? (
                               format(field.value, "dd/MM/yyyy", {
@@ -266,7 +325,12 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} locale={ptBR} />
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          locale={ptBR}
+                        />
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -276,11 +340,22 @@ export function BudgetDialog({ open, onOpenChange, budget }: BudgetDialogProps) 
             )}
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={createBudget.isPending || updateBudget.isPending}>
-                {createBudget.isPending || updateBudget.isPending ? "Salvando..." : isEditing ? "Atualizar" : "Criar"}
+              <Button
+                type="submit"
+                disabled={createBudget.isPending || updateBudget.isPending}
+              >
+                {createBudget.isPending || updateBudget.isPending
+                  ? "Salvando..."
+                  : isEditing
+                    ? "Atualizar"
+                    : "Criar"}
               </Button>
             </DialogFooter>
           </form>

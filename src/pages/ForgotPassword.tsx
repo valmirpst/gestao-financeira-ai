@@ -1,6 +1,20 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { resetPassword } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +27,8 @@ import { z } from "zod";
 const forgotPasswordSchema = z.object({
   email: z
     .string({
-      error: (issue) => (issue.input === undefined ? "Email é obrigatório" : undefined),
+      error: (issue) =>
+        issue.input === undefined ? "Email é obrigatório" : undefined,
     })
     .email("Email inválido"),
 });
@@ -51,12 +66,20 @@ export default function ForgotPassword() {
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">Email Enviado!</CardTitle>
-            <CardDescription className="text-center">Verifique sua caixa de entrada</CardDescription>
+            <CardTitle className="text-2xl font-bold text-center">
+              Email Enviado!
+            </CardTitle>
+            <CardDescription className="text-center">
+              Verifique sua caixa de entrada
+            </CardDescription>
           </CardHeader>
           <CardContent className="text-center space-y-4">
-            <p className="text-muted-foreground">Enviamos um email com instruções para redefinir sua senha.</p>
-            <p className="text-sm text-muted-foreground">Não esqueça de verificar a pasta de spam.</p>
+            <p className="text-muted-foreground">
+              Enviamos um email com instruções para redefinir sua senha.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Não esqueça de verificar a pasta de spam.
+            </p>
           </CardContent>
           <CardFooter className="flex justify-center">
             <Link to="/login">
@@ -72,8 +95,12 @@ export default function ForgotPassword() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Recuperar Senha</CardTitle>
-          <CardDescription className="text-center">Digite seu email para receber instruções</CardDescription>
+          <CardTitle className="text-2xl font-bold text-center">
+            Recuperar Senha
+          </CardTitle>
+          <CardDescription className="text-center">
+            Digite seu email para receber instruções
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -85,21 +112,34 @@ export default function ForgotPassword() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="seu@email.com" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="seu@email.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Enviando..." : "Enviar Email de Recuperação"}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting
+                  ? "Enviando..."
+                  : "Enviar Email de Recuperação"}
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Link to="/login" className="text-sm text-muted-foreground hover:text-primary">
+          <Link
+            to="/login"
+            className="text-sm text-muted-foreground hover:text-primary"
+          >
             Voltar para login
           </Link>
         </CardFooter>

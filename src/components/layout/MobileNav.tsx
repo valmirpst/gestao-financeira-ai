@@ -1,7 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Brand } from "@/components/Brand";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useNavigationLinks } from "@/hooks/useNavigationLinks";
 import { useTransactions } from "@/hooks/useTransactions";
 import { cn, parseDateSafe } from "@/lib/utils";
@@ -24,7 +30,10 @@ export function MobileNav() {
 
   const overdueCount = useMemo(() => {
     return upcomingBills.filter(
-      (t) => (t.status === "overdue" || (t.due_date && isPast(parseDateSafe(t.due_date)))) && t.status !== "paid",
+      (t) =>
+        (t.status === "overdue" ||
+          (t.due_date && isPast(parseDateSafe(t.due_date)))) &&
+        t.status !== "paid",
     ).length;
   }, [upcomingBills]);
 
@@ -47,7 +56,9 @@ export function MobileNav() {
                 to={item.href}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                  isActive
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <div className="relative">
