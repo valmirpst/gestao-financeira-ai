@@ -74,7 +74,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 const ITEMS_PER_PAGE = 50;
@@ -257,7 +257,7 @@ export default function Transactions() {
   }, [paginatedTransactions, selectedTransactionIds]);
 
   // Reset to page 1 when filters change
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [type, status, categoryId, accountId, search, hidePaid, dateRange]);
 
@@ -371,7 +371,7 @@ export default function Transactions() {
   };
 
   // Clear selections when page changes
-  useMemo(() => {
+  useEffect(() => {
     setSelectedTransactionIds(new Set());
   }, [currentPage]);
 

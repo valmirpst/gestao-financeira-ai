@@ -245,7 +245,7 @@ export default function Bills() {
       totalToReceive,
       totalOverdueToReceive,
     };
-  }, [allTransactions]);
+  }, [filteredTransactions]);
 
   // Handle mark as paid
   const handleOpenMarkAsPaidDialog = (

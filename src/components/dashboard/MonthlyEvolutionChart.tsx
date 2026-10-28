@@ -76,7 +76,9 @@ export function MonthlyEvolutionChart() {
                 tickFormatter={(val) => `R$ ${val}`}
               />
               <Tooltip
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value) =>
+                  typeof value === "number" ? formatCurrency(value) : value
+                }
                 contentStyle={{
                   backgroundColor: "hsl(var(--popover))",
                   borderColor: "hsl(var(--border))",

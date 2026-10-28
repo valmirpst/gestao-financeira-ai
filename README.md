@@ -16,7 +16,7 @@ Sistema completo de gestão financeira pessoal com controle de receitas, despesa
 
 ## 📋 Pré-requisitos
 
-- Node.js 18+ e npm/yarn/pnpm
+- Node.js 20.19+, 22.13+ ou 24+ e npm/yarn/pnpm
 - Conta no Supabase (gratuita)
 
 ## 🛠️ Instalação
