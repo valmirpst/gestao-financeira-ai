@@ -435,7 +435,7 @@ export default function Transactions() {
           <p className="text-sm font-medium text-muted-foreground">
             Total de Entradas
           </p>
-          <p className="mt-2 text-2xl font-bold text-green-600">
+          <p className="mt-2 text-2xl font-bold text-emerald-700 dark:text-emerald-400">
             {formatCurrency(totals.income)}
           </p>
         </div>
@@ -444,12 +444,12 @@ export default function Transactions() {
             Total de Saídas
           </p>
           <div className="flex items-baseline flex-col gap-1">
-            <p className="mt-2 text-2xl font-bold text-red-600">
+            <p className="mt-2 text-2xl font-bold text-red-700 dark:text-red-400">
               {formatCurrency(totals.paidExpense)}
             </p>
             <p className="text-sm text-muted-foreground">
               A ser pago:{" "}
-              <span className="text-red-600">
+              <span className="text-red-700 dark:text-red-400">
                 {formatCurrency(totals.expense - totals.paidExpense)}
               </span>
             </p>
@@ -463,14 +463,14 @@ export default function Transactions() {
             <p
               className={cn(
                 "mt-2 text-2xl font-bold",
-                totals.balance >= 0 ? "text-green-600" : "text-red-600",
+                totals.balance >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400",
               )}
             >
               {formatCurrency(totals.balance)}
             </p>
             <p className="text-sm text-muted-foreground">
               Considerando despesas a pagar:{" "}
-              <span className="text-red-600">
+              <span className="text-red-700 dark:text-red-400">
                 {formatCurrency(
                   totals.balance - (totals.expense - totals.paidExpense),
                 )}
@@ -844,8 +844,8 @@ export default function Transactions() {
                     className={cn(
                       "text-right font-semibold",
                       transaction.type === "income"
-                        ? "text-green-600"
-                        : "text-red-600",
+                        ? "text-emerald-700 dark:text-emerald-400"
+                        : "text-red-700 dark:text-red-400",
                     )}
                   >
                     {transaction.type === "income" ? "+" : "-"}
@@ -1153,13 +1153,13 @@ export default function Transactions() {
                   <span className="text-xs text-muted-foreground">
                     Entradas
                   </span>
-                  <span className="text-sm font-semibold text-green-600">
+                  <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                     {formatCurrency(selectedTotals.income)}
                   </span>
                 </div>
                 <div className="flex flex-col items-center md:items-end">
                   <span className="text-xs text-muted-foreground">Saídas</span>
-                  <span className="text-sm font-semibold text-red-600">
+                  <span className="text-sm font-semibold text-red-700 dark:text-red-400">
                     {formatCurrency(selectedTotals.expense)}
                   </span>
                 </div>
@@ -1169,8 +1169,8 @@ export default function Transactions() {
                     className={cn(
                       "text-sm font-semibold",
                       selectedTotals.total >= 0
-                        ? "text-green-600"
-                        : "text-red-600",
+                        ? "text-emerald-700 dark:text-emerald-400"
+                        : "text-red-700 dark:text-red-400",
                     )}
                   >
                     {formatCurrency(selectedTotals.total)}
@@ -1182,8 +1182,8 @@ export default function Transactions() {
                     className={cn(
                       "text-sm font-semibold",
                       selectedTotals.average >= 0
-                        ? "text-green-600"
-                        : "text-red-600",
+                        ? "text-emerald-700 dark:text-emerald-400"
+                        : "text-red-700 dark:text-red-400",
                     )}
                   >
                     {formatCurrency(selectedTotals.average)}

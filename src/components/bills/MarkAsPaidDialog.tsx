@@ -83,7 +83,7 @@ export function MarkAsPaidDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-600" />
+            <CheckCircle className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
             Marcar como Paga
           </DialogTitle>
           <DialogDescription>

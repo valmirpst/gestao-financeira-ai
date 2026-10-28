@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Brand } from "@/components/Brand";
 import { useNavigationLinks } from "@/hooks/useNavigationLinks";
 import { useTransactions } from "@/hooks/useTransactions";
 import { cn, parseDateSafe } from "@/lib/utils";
@@ -32,9 +33,7 @@ export function Sidebar() {
       <div className="flex h-full flex-col">
         {/* Logo */}
         <div className="flex h-16 items-center border-b px-6">
-          <Link to="/preview">
-            <h1 className="text-xl font-bold">Gestão Financeira</h1>
-          </Link>
+          <Brand />
         </div>
 
         {/* Navigation */}

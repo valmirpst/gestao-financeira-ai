@@ -110,7 +110,7 @@ export default function Accounts() {
             <p className="text-sm text-muted-foreground mb-1">Saldo Atual</p>
             <p
               className={`text-3xl font-bold ${
-                isPositive ? "text-green-600" : "text-red-600"
+                isPositive ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"
               }`}
             >
               {formatCurrency(account.current_balance)}
@@ -209,8 +209,8 @@ export default function Accounts() {
       </div>
 
       {/* Info Box */}
-      <div className="p-4 rounded-xl border border-blue-100 bg-blue-50/50 dark:border-blue-900/20 dark:bg-blue-900/10">
-        <p className="text-sm text-blue-700 dark:text-blue-400 leading-relaxed">
+      <div className="p-4 rounded-xl border border-border bg-accent/50">
+        <p className="text-sm text-accent-foreground leading-relaxed">
           Os saldos exibidos são baseados nas transações registradas em cada
           conta. Você pode sincronizar os saldos a qualquer momento no menu de
           cada conta.

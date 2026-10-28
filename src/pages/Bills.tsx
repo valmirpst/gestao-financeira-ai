@@ -367,10 +367,10 @@ export default function Bills() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total a Pagar</CardTitle>
-            <DollarSign className="h-4 w-4 text-red-600" />
+            <DollarSign className="h-4 w-4 text-red-700 dark:text-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-2xl font-bold text-red-700 dark:text-red-400">
               {formatCurrency(summary.totalToPay)}
             </div>
           </CardContent>
@@ -381,10 +381,10 @@ export default function Bills() {
             <CardTitle className="text-sm font-medium">
               Vencido a Pagar
             </CardTitle>
-            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertCircle className="h-4 w-4 text-red-700 dark:text-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-2xl font-bold text-red-700 dark:text-red-400">
               {formatCurrency(summary.totalOverdueToPay)}
             </div>
           </CardContent>
@@ -395,10 +395,10 @@ export default function Bills() {
             <CardTitle className="text-sm font-medium">
               Total a Receber
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
+            <DollarSign className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
               {formatCurrency(summary.totalToReceive)}
             </div>
           </CardContent>
@@ -409,10 +409,10 @@ export default function Bills() {
             <CardTitle className="text-sm font-medium">
               Vencido a Receber
             </CardTitle>
-            <AlertCircle className="h-4 w-4 text-green-600" />
+            <AlertCircle className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
               {formatCurrency(summary.totalOverdueToReceive)}
             </div>
           </CardContent>
@@ -696,7 +696,7 @@ export default function Bills() {
                                     )
                                   }
                                 >
-                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                  <CheckCircle className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
                                 </Button>
                               </div>
                             </TableCell>

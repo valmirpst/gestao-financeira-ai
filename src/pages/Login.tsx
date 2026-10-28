@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Brand } from "@/components/Brand";
 import {
   Card,
   CardContent,
@@ -75,13 +76,11 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            <Link to="/preview">
-              <h1 className="text-xl font-bold">Gestão Financeira</h1>
-            </Link>
+            <Brand />
           </CardTitle>
           <CardDescription className="text-center">
             Entre com sua conta para continuar

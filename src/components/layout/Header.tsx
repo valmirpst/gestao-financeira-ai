@@ -36,7 +36,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background">
+    <header className="sticky top-0 z-40 border-b bg-card">
       <div className="flex h-16 items-center justify-between px-6">
         <h2 className="text-lg font-semibold">
           {navigation.find((item) => item.href === location.pathname)?.name ||
@@ -49,7 +49,7 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="relative h-10 w-10 rounded-full border-gray-300"
+                className="relative h-10 w-10 rounded-full border-border"
               >
                 <div className="flex h-10 w-max items-center justify-center rounded-full text-primary">
                   {getUserInitials()}
@@ -74,7 +74,7 @@ export function Header() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="cursor-pointer text-red-600"
+                className="cursor-pointer text-red-700 dark:text-red-400"
                 onClick={handleSignOut}
               >
                 <LogOut className="mr-2 h-4 w-4" />

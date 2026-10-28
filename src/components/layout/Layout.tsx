@@ -17,7 +17,7 @@ export function Layout({ children }: LayoutProps) {
         <Header />
 
         {/* Page content */}
-        <main className="p-6">{children}</main>
+        <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

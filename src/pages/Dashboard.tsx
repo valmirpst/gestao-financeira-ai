@@ -412,10 +412,10 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium">
               Total de Entradas
             </CardTitle>
-            <ArrowUpCircle className="h-4 w-4 text-green-600" />
+            <ArrowUpCircle className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
               {isLoading ? "..." : formatCurrency(currentIncome)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -430,10 +430,10 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium">
               Total de Saídas
             </CardTitle>
-            <ArrowDownCircle className="h-4 w-4 text-red-600" />
+            <ArrowDownCircle className="h-4 w-4 text-red-700 dark:text-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-2xl font-bold text-red-700 dark:text-red-400">
               {isLoading ? "..." : formatCurrency(currentExpense)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -451,7 +451,7 @@ export default function Dashboard() {
           <CardContent>
             <div
               className={`text-2xl font-bold ${
-                currentBalance >= 0 ? "text-green-600" : "text-red-600"
+                currentBalance >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"
               }`}
             >
               {isLoading ? "..." : formatCurrency(currentBalance)}
@@ -467,16 +467,16 @@ export default function Dashboard() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Variação</CardTitle>
             {isPositiveVariation ? (
-              <TrendingUp className="h-4 w-4 text-green-600" />
+              <TrendingUp className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
             ) : (
-              <TrendingDown className="h-4 w-4 text-red-600" />
+              <TrendingDown className="h-4 w-4 text-red-700 dark:text-red-400" />
             )}
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
               <span
                 className={`text-2xl font-bold ${
-                  isPositiveVariation ? "text-green-600" : "text-red-600"
+                  isPositiveVariation ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"
                 }`}
               >
                 {isLoading
@@ -520,19 +520,19 @@ export default function Dashboard() {
               )}
             </CardTitle>
             <DollarSign
-              className={`h-4 w-4 ${billsSummary.overdueToPay > 0 ? "text-red-600" : "text-muted-foreground"}`}
+              className={`h-4 w-4 ${billsSummary.overdueToPay > 0 ? "text-red-700 dark:text-red-400" : "text-muted-foreground"}`}
             />
           </CardHeader>
           <CardContent>
             <div
               className={`text-2xl font-bold ${
-                billsSummary.overdueToPay > 0 ? "text-red-600" : ""
+                billsSummary.overdueToPay > 0 ? "text-red-700 dark:text-red-400" : ""
               }`}
             >
               {formatCurrency(billsSummary.toPay)}
             </div>
             {billsSummary.overdueToPay > 0 && (
-              <p className="text-sm text-red-600 mt-1 font-medium">
+              <p className="text-sm text-red-700 dark:text-red-400 mt-1 font-medium">
                 {formatCurrency(billsSummary.overdueToPay)} vencido
               </p>
             )}
@@ -551,10 +551,10 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium">
               Contas a Receber
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
+            <DollarSign className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
               {formatCurrency(billsSummary.toReceive)}
             </div>
             {billsSummary.overdueToReceive > 0 && (
@@ -639,7 +639,7 @@ export default function Dashboard() {
                             size="sm"
                             onClick={() => handleOpenMarkAsPaidDialog(bill)}
                           >
-                            <CheckCircle className="h-4 w-4 text-green-600" />
+                            <CheckCircle className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
                           </Button>
                         </TableCell>
                       </TableRow>

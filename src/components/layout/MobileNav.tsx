@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Brand } from "@/components/Brand";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigationLinks } from "@/hooks/useNavigationLinks";
@@ -81,9 +82,7 @@ export function MobileNav() {
             <SheetContent side="left" className="w-[80vw] sm:w-[350px] p-0">
               <SheetHeader className="p-6 border-b">
                 <SheetTitle className="text-left">
-                  <Link to="/preview">
-                    <h1 className="text-xl font-bold">Gestão Financeira</h1>
-                  </Link>
+                  <Brand />
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col p-4 space-y-2">

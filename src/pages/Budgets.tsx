@@ -208,7 +208,7 @@ export default function Budgets() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1 text-red-600 hover:text-red-700"
+                      className="flex-1 text-red-700 dark:text-red-400 hover:text-red-700"
                       onClick={() => handleDelete(budget.id)}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />

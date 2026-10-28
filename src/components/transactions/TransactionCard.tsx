@@ -124,8 +124,8 @@ export function TransactionCard({
                 className={cn(
                   "font-bold",
                   transaction.type === "income"
-                    ? "text-green-600"
-                    : "text-red-600",
+                    ? "text-emerald-700 dark:text-emerald-400"
+                    : "text-red-700 dark:text-red-400",
                 )}
               >
                 {transaction.type === "income" ? "+" : "-"}
