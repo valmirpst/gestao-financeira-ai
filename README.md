@@ -75,7 +75,7 @@ Edite o arquivo `.env` e adicione suas credenciais do Supabase:
 
 ```env
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
-VITE_SUPABASE_ANON_KEY=sua-anon-key-aqui
+VITE_SUPABASE_PUBLISHABLE_KEY=sua-publishable-key-aqui
 ```
 
 ### 5. Instale os componentes do shadcn/ui
