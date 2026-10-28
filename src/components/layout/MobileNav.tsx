@@ -1,17 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigationLinks } from "@/hooks/useNavigationLinks";
 import { useTransactions } from "@/hooks/useTransactions";
 import { cn, parseDateSafe } from "@/lib/utils";
 import { addDays, format, isPast } from "date-fns";
-import { motion } from "framer-motion";
 import { Menu } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -30,30 +23,12 @@ export function MobileNav() {
 
   const overdueCount = useMemo(() => {
     return upcomingBills.filter(
-      (t) =>
-        (t.status === "overdue" ||
-          (t.due_date && isPast(parseDateSafe(t.due_date)))) &&
-        t.status !== "paid",
+      (t) => (t.status === "overdue" || (t.due_date && isPast(parseDateSafe(t.due_date)))) && t.status !== "paid",
     ).length;
   }, [upcomingBills]);
 
   // Main items for bottom bar (top 4 or specific ones)
   const bottomNavItems = navigation.slice(0, 4);
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariant = {
-    hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0 },
-  };
 
   return (
     <>
@@ -71,9 +46,7 @@ export function MobileNav() {
                 to={item.href}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition-colors",
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <div className="relative">
@@ -113,19 +86,14 @@ export function MobileNav() {
                   </Link>
                 </SheetTitle>
               </SheetHeader>
-              <motion.nav
-                className="flex flex-col p-4 space-y-2"
-                variants={container}
-                initial="hidden"
-                animate="show"
-              >
+              <nav className="flex flex-col p-4 space-y-2">
                 {navigation.map((item) => {
                   const isActive = location.pathname === item.href;
                   const Icon = item.icon;
                   const showBadge = item.href === "/bills" && overdueCount > 0;
 
                   return (
-                    <motion.div key={item.name} variants={itemVariant}>
+                    <div key={item.name}>
                       <Link
                         to={item.href}
                         onClick={() => setOpen(false)}
@@ -144,10 +112,10 @@ export function MobileNav() {
                           </Badge>
                         )}
                       </Link>
-                    </motion.div>
+                    </div>
                   );
                 })}
-              </motion.nav>
+              </nav>
             </SheetContent>
           </Sheet>
         </nav>

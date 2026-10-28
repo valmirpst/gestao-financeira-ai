@@ -85,3 +85,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes hero-entrance {
+  from {
+    transform: translateY(16px);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.hero-entrance {
+  animation: hero-entrance 600ms ease-out both;
+}

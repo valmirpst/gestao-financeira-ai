@@ -83,24 +83,20 @@ export function ScreenShowcase() {
             </span>
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Interface moderna e intuitiva para você gerenciar suas finanças com
-            facilidade
+            Interface moderna e intuitiva para você gerenciar suas finanças com facilidade
           </p>
         </ScrollReveal>
 
         <Tabs defaultValue="dashboard" className="space-y-12">
           {/* Animated tabs container with scroll reveal */}
-          <ScrollReveal
-            className="flex md:justify-center overflow-hidden"
-            delay={0.2}
-          >
+          <ScrollReveal className="flex md:justify-center overflow-hidden" delay={0.2}>
             <div className="w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth">
               <TabsList className="inline-flex h-auto p-1 bg-slate-900/50 border border-slate-800 rounded-xl md:rounded-2xl gap-2 min-w-full md:min-w-0">
                 {screens.map((screen) => (
                   <TabsTrigger
                     key={screen.id}
                     value={screen.id}
-                    className="shrink-0 data-[state=active]:bg-linear-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/20 data-[state=active]:scale-105 text-slate-400 rounded-lg md:rounded-xl py-2.5 px-4 md:py-3 md:px-6 text-sm font-medium transition-all duration-300 hover:scale-105 hover:text-slate-200 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="shrink-0 data-[state=active]:bg-linear-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/20 text-slate-400 rounded-lg md:rounded-xl py-2.5 px-4 md:py-3 md:px-6 text-sm font-medium transition-colors duration-200 hover:text-slate-200 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     {screen.label}
                   </TabsTrigger>
@@ -110,11 +106,7 @@ export function ScreenShowcase() {
           </ScrollReveal>
 
           {screens.map((screen) => (
-            <TabsContent
-              key={screen.id}
-              value={screen.id}
-              className="space-y-8"
-            >
+            <TabsContent key={screen.id} value={screen.id} className="space-y-8">
               <ScreenPreview screen={screen} />
             </TabsContent>
           ))}
