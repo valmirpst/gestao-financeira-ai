@@ -1,85 +1,34 @@
-import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle, ChevronDown, Sparkles } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ProductOverview } from "./ProductOverview";
 
 export function HeroSection() {
-  const navigate = useNavigate();
-
   return (
-    <section className="relative overflow-hidden px-4 sm:px-6 pt-20 pb-32 lg:pt-32 lg:pb-40">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.15),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(139,92,246,0.15),transparent_50%)]" />
-        {/* Background gradient orb */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
-      </div>
-
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
-
-      <div className="container mx-auto max-w-7xl">
-        <div className="hero-entrance text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 backdrop-blur-sm">
-            <Sparkles className="w-4 h-4 text-blue-400" />
-            <span className="text-sm text-blue-100 font-medium">Controle Financeiro Inteligente</span>
-          </div>
-          <div className="space-y-4">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight">
-              Gerencie suas finanças
-              <br />
-              <span className="bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text">
-                com inteligência
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              Organize suas transações, controle contas a pagar, acompanhe seus gastos e tome decisões financeiras mais
-              assertivas.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Button
-              size="lg"
-              className="flex items-center gap-3 group bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-md shadow-blue-500/25 transition duration-200 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400"
-              onClick={() => navigate("/register")}
+    <section className="overflow-hidden px-5 pb-16 pt-14 sm:px-8 sm:pb-24 sm:pt-20 lg:px-10 lg:pb-28 lg:pt-24">
+      <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        <div className="hero-entrance max-w-xl">
+          <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight text-[#15352f] sm:text-5xl lg:text-6xl">
+            Organize suas finanças <span className="text-emerald-700">em um só lugar.</span>
+          </h1>
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">
+            Registre receitas e despesas, acompanhe suas contas e veja como seu dinheiro está sendo usado.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link
+              to="/register"
+              className="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-[#123e36] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700"
             >
-              Começar agora
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-slate-700 bg-slate-900/60 text-slate-200 hover:bg-slate-800 hover:text-white px-8 py-4 text-lg font-semibold backdrop-blur-sm transition duration-200 hover:border-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-600"
-              onClick={() => navigate("/login")}
+              Criar minha conta <ArrowRight size={17} />
+            </Link>
+            <a
+              href="#recursos"
+              className="inline-flex min-h-12 items-center gap-2 px-2 text-sm font-semibold text-slate-700 hover:text-emerald-800"
             >
-              Entrar
-            </Button>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8 text-sm text-slate-300">
-            {["100% Gratuito", "Seguro e Privado", "Relatórios em tempo real"].map((feature) => (
-              <div key={feature} className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-400" />
-                <span>{feature}</span>
-              </div>
-            ))}
+              Ver recursos <ArrowRight size={16} />
+            </a>
           </div>
         </div>
-      </div>
-
-      {/* Scroll hint */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-8">
-        <button
-          aria-label="Rolar para baixo"
-          onClick={() =>
-            window.scrollTo({
-              top: window.innerHeight,
-              behavior: "smooth",
-            })
-          }
-          className="flex items-center justify-center w-10 h-10 rounded-full text-slate-200 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer dark:text-slate-400 dark:hover:text-white"
-        >
-          <ChevronDown className="w-5 h-5" />
-        </button>
+        <ProductOverview />
       </div>
     </section>
   );
