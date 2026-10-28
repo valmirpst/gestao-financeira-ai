@@ -10,10 +10,7 @@ import { CheckCircle2, Edit, Trash2 } from "lucide-react";
 interface TransactionCardProps {
   transaction: TransactionWithRelations;
   statusLabels: Record<TransactionStatus, string>;
-  statusVariants: Record<
-    TransactionStatus,
-    "default" | "secondary" | "destructive" | "outline"
-  >;
+  statusVariants: Record<TransactionStatus, "default" | "secondary" | "destructive" | "outline">;
   getAccountName: (t: TransactionWithRelations) => string;
   onEdit: (t: TransactionWithRelations) => void;
   onDelete: (t: TransactionWithRelations) => void;
@@ -37,10 +34,7 @@ export function TransactionCard({
 }: TransactionCardProps) {
   const controls = useAnimation();
 
-  const handleDragEnd = async (
-    _event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo,
-  ) => {
+  const handleDragEnd = async (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 
@@ -79,7 +73,7 @@ export function TransactionCard({
         </Button>
         <Button
           variant="ghost"
-          className="flex h-full flex-1 flex-col items-center justify-center gap-1 rounded-none text-red-700 dark:text-red-600 hover:bg-red-100 dark:hover:bg-red-900 hover:text-red-800 dark:hover:text-red-200"
+          className="flex h-full flex-1 flex-col items-center justify-center gap-1 rounded-none text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 hover:text-red-800 dark:hover:text-red-200"
           onClick={() => {
             onDelete(transaction);
             controls.start({ x: 0 });
@@ -98,26 +92,20 @@ export function TransactionCard({
         animate={controls}
         className="relative z-10 border bg-card shadow-sm"
       >
-        <div
-          className={cn("p-4", transaction.status === "paid" && "opacity-60")}
-        >
+        <div className={cn("p-4", transaction.status === "paid" && "opacity-60")}>
           <div className="flex items-start justify-between mb-2 gap-3">
             {onSelect && (
               <div className="pt-1">
                 <Checkbox
                   checked={isSelected}
-                  onCheckedChange={(checked) =>
-                    onSelect(transaction.id, checked as boolean)
-                  }
+                  onCheckedChange={(checked) => onSelect(transaction.id, checked as boolean)}
                   aria-label={`Selecionar transação ${transaction.description}`}
                 />
               </div>
             )}
             <div className="flex-1">
               <p className="font-semibold">{transaction.description}</p>
-              <p className="text-xs text-muted-foreground">
-                {formatDateSafe(transaction.date)}
-              </p>
+              <p className="text-xs text-muted-foreground">{formatDateSafe(transaction.date)}</p>
             </div>
             <div className="text-right">
               <p
@@ -131,10 +119,7 @@ export function TransactionCard({
                 {transaction.type === "income" ? "+" : "-"}
                 {formatCurrency(transaction.amount)}
               </p>
-              <Badge
-                variant={statusVariants[transaction.status]}
-                className="mt-1 h-5 px-1.5 text-[10px]"
-              >
+              <Badge variant={statusVariants[transaction.status]} className="mt-1 h-5 px-1.5 text-[10px]">
                 {statusLabels[transaction.status]}
               </Badge>
             </div>

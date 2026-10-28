@@ -1,20 +1,6 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { createDefaultCategories } from "@/lib/setup";
@@ -29,16 +15,16 @@ const registerSchema = z
   .object({
     email: z
       .string({
-        required_error: "Email é obrigatório",
+        error: (issue) => (issue.input === undefined ? "Email é obrigatório" : undefined),
       })
       .email("Email inválido"),
     password: z
       .string({
-        required_error: "Senha é obrigatória",
+        error: (issue) => (issue.input === undefined ? "Senha é obrigatória" : undefined),
       })
       .min(6, "Senha deve ter no mínimo 6 caracteres"),
     confirmPassword: z.string({
-      required_error: "Confirmação de senha é obrigatória",
+      error: (issue) => (issue.input === undefined ? "Confirmação de senha é obrigatória" : undefined),
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -101,12 +87,8 @@ export default function Register() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Criar Conta
-          </CardTitle>
-          <CardDescription className="text-center">
-            Preencha os dados para criar sua conta
-          </CardDescription>
+          <CardTitle className="text-2xl font-bold text-center">Criar Conta</CardTitle>
+          <CardDescription className="text-center">Preencha os dados para criar sua conta</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -118,11 +100,7 @@ export default function Register() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="seu@email.com"
-                        {...field}
-                      />
+                      <Input type="email" placeholder="seu@email.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -157,11 +135,7 @@ export default function Register() {
                 )}
               />
 
-              <Button
-                type="submit"
-                className="w-full"
-                loading={form.formState.isSubmitting}
-              >
+              <Button type="submit" className="w-full" loading={form.formState.isSubmitting}>
                 Criar Conta
               </Button>
             </form>

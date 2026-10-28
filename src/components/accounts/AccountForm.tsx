@@ -1,20 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { AccountInsert } from "@/types/database.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2 } from "lucide-react";
@@ -25,17 +12,17 @@ import { z } from "zod";
 const accountSchema = z.object({
   name: z
     .string({
-      required_error: "Nome é obrigatório",
+      error: (issue) => (issue.input === undefined ? "Nome é obrigatório" : undefined),
     })
     .min(2, "Nome deve ter no mínimo 2 caracteres")
     .max(100, "Nome deve ter no máximo 100 caracteres"),
   type: z.enum(["checking", "savings", "cash", "investment", "other"], {
-    required_error: "Tipo é obrigatório",
+    error: (issue) => (issue.input === undefined ? "Tipo é obrigatório" : undefined),
   }),
   initial_balance: z
     .number({
-      required_error: "Saldo inicial é obrigatório",
-      invalid_type_error: "Saldo inicial deve ser um número",
+      error: (issue) =>
+        issue.input === undefined ? "Saldo inicial é obrigatório" : "Saldo inicial deve ser um número",
     })
     .default(0),
   currency: z.string().default("BRL"),
@@ -52,16 +39,9 @@ interface AccountFormProps {
   isEditing?: boolean;
 }
 
-export function AccountForm({
-  onSubmit,
-  onCancel,
-  onDelete,
-  defaultValues,
-  isLoading,
-  isEditing,
-}: AccountFormProps) {
+export function AccountForm({ onSubmit, onCancel, onDelete, defaultValues, isLoading, isEditing }: AccountFormProps) {
   // Form setup
-  const form = useForm<AccountFormValues>({
+  const form = useForm<z.input<typeof accountSchema>, unknown, AccountFormValues>({
     resolver: zodResolver(accountSchema),
     defaultValues: {
       type: "checking",
@@ -198,11 +178,7 @@ export function AccountForm({
             </Button>
           )}
 
-          <Button
-            type="submit"
-            className="w-full sm:w-auto"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full sm:w-auto" disabled={isLoading}>
             {isLoading ? "Salvando..." : "Salvar"}
           </Button>
         </div>

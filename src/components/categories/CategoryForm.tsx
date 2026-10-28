@@ -1,21 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCategories } from "@/hooks/useCategories";
 import { cn } from "@/lib/utils";
 import type { CategoryInsert } from "@/types/database.types";
@@ -64,18 +50,18 @@ const AVAILABLE_ICONS = [
 const categorySchema = z.object({
   name: z
     .string({
-      required_error: "Nome é obrigatório",
+      error: (issue) => (issue.input === undefined ? "Nome é obrigatório" : undefined),
     })
     .min(2, "Nome deve ter no mínimo 2 caracteres")
     .max(50, "Nome deve ter no máximo 50 caracteres"),
   type: z.enum(["income", "expense", "both"], {
-    required_error: "Tipo é obrigatório",
+    error: (issue) => (issue.input === undefined ? "Tipo é obrigatório" : undefined),
   }),
   color: z.string({
-    required_error: "Cor é obrigatória",
+    error: (issue) => (issue.input === undefined ? "Cor é obrigatória" : undefined),
   }),
   icon: z.string({
-    required_error: "Ícone é obrigatório",
+    error: (issue) => (issue.input === undefined ? "Ícone é obrigatório" : undefined),
   }),
   parent_category_id: z.string().optional(),
 });
@@ -91,14 +77,7 @@ interface CategoryFormProps {
   isEditing?: boolean;
 }
 
-export function CategoryForm({
-  onSubmit,
-  onCancel,
-  onDelete,
-  defaultValues,
-  isLoading,
-  isEditing,
-}: CategoryFormProps) {
+export function CategoryForm({ onSubmit, onCancel, onDelete, defaultValues, isLoading, isEditing }: CategoryFormProps) {
   // Fetch categories for parent selection
   const { data: categories = [] } = useCategories();
 
@@ -171,9 +150,7 @@ export function CategoryForm({
                   <SelectItem value="both">Ambos</SelectItem>
                 </SelectContent>
               </Select>
-              <FormDescription>
-                Define se a categoria é para receitas, despesas ou ambos
-              </FormDescription>
+              <FormDescription>Define se a categoria é para receitas, despesas ou ambos</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -200,10 +177,7 @@ export function CategoryForm({
                           : "border-transparent",
                       )}
                     >
-                      <div
-                        className="h-6 w-6 rounded-full"
-                        style={{ backgroundColor: color.value }}
-                      />
+                      <div className="h-6 w-6 rounded-full" style={{ backgroundColor: color.value }} />
                       <span className="text-xs">{color.name}</span>
                     </button>
                   ))}
@@ -231,10 +205,7 @@ export function CategoryForm({
                   {AVAILABLE_ICONS.map((icon) => (
                     <SelectItem key={icon} value={icon}>
                       <div className="flex items-center gap-2">
-                        <div
-                          className="h-4 w-4 rounded"
-                          style={{ backgroundColor: watchColor }}
-                        />
+                        <div className="h-4 w-4 rounded" style={{ backgroundColor: watchColor }} />
                         {icon}
                       </div>
                     </SelectItem>
@@ -253,10 +224,7 @@ export function CategoryForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Categoria Pai (opcional)</FormLabel>
-              <Select
-                onValueChange={(value) => field.onChange(value || undefined)}
-                value={field.value || ""}
-              >
+              <Select onValueChange={(value) => field.onChange(value || undefined)} value={field.value || ""}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Nenhuma (categoria principal)" />
@@ -266,19 +234,14 @@ export function CategoryForm({
                   {parentCategories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       <div className="flex items-center gap-2">
-                        <div
-                          className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: category.color }}
-                        />
+                        <div className="h-3 w-3 rounded-full" style={{ backgroundColor: category.color }} />
                         {category.name}
                       </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <FormDescription>
-                Subcategorias herdam o tipo da categoria pai
-              </FormDescription>
+              <FormDescription>Subcategorias herdam o tipo da categoria pai</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -311,11 +274,7 @@ export function CategoryForm({
             </Button>
           )}
 
-          <Button
-            type="submit"
-            className="w-full sm:w-auto"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full sm:w-auto" disabled={isLoading}>
             {isLoading ? "Salvando..." : "Salvar"}
           </Button>
         </div>

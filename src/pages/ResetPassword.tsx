@@ -1,20 +1,6 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { updatePassword } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,11 +14,11 @@ const resetPasswordSchema = z
   .object({
     password: z
       .string({
-        required_error: "Senha é obrigatória",
+        error: (issue) => (issue.input === undefined ? "Senha é obrigatória" : undefined),
       })
       .min(6, "A senha deve ter no mínimo 6 caracteres"),
     confirmPassword: z.string({
-      required_error: "Confirmação de senha é obrigatória",
+      error: (issue) => (issue.input === undefined ? "Confirmação de senha é obrigatória" : undefined),
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -80,17 +66,11 @@ export default function ResetPassword() {
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">
-              Senha Atualizada!
-            </CardTitle>
-            <CardDescription className="text-center">
-              Sua senha foi redefinida com sucesso
-            </CardDescription>
+            <CardTitle className="text-2xl font-bold text-center">Senha Atualizada!</CardTitle>
+            <CardDescription className="text-center">Sua senha foi redefinida com sucesso</CardDescription>
           </CardHeader>
           <CardContent className="text-center space-y-4">
-            <p className="text-muted-foreground">
-              Você será redirecionado para o dashboard em instantes...
-            </p>
+            <p className="text-muted-foreground">Você será redirecionado para o dashboard em instantes...</p>
           </CardContent>
           <CardFooter className="flex justify-center">
             <Link to="/dashboard">
@@ -106,12 +86,8 @@ export default function ResetPassword() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Redefinir Senha
-          </CardTitle>
-          <CardDescription className="text-center">
-            Digite sua nova senha
-          </CardDescription>
+          <CardTitle className="text-2xl font-bold text-center">Redefinir Senha</CardTitle>
+          <CardDescription className="text-center">Digite sua nova senha</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -123,11 +99,7 @@ export default function ResetPassword() {
                   <FormItem>
                     <FormLabel>Nova Senha</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        {...field}
-                      />
+                      <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -141,34 +113,21 @@ export default function ResetPassword() {
                   <FormItem>
                     <FormLabel>Confirmar Nova Senha</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        {...field}
-                      />
+                      <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting
-                  ? "Atualizando..."
-                  : "Atualizar Senha"}
+              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Atualizando..." : "Atualizar Senha"}
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Link
-            to="/login"
-            className="text-sm text-muted-foreground hover:text-primary"
-          >
+          <Link to="/login" className="text-sm text-muted-foreground hover:text-primary">
             Voltar para login
           </Link>
         </CardFooter>

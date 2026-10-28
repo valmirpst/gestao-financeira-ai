@@ -40,26 +40,25 @@ import { z } from "zod";
 const transactionSchema = z
   .object({
     type: z.enum(["income", "expense"], {
-      required_error: "Selecione se é uma entrada ou saída",
+      error: (issue) => issue.input === undefined ? "Selecione se é uma entrada ou saída" : undefined,
     }),
     amount: z
       .number({
-        required_error: "Informe o valor",
-        invalid_type_error: "Digite um valor válido",
+        error: (issue) => issue.input === undefined ? "Informe o valor" : "Digite um valor válido",
       })
       .positive("O valor deve ser maior que zero"),
     description: z
       .string({
-        required_error: "Informe uma descrição",
+        error: (issue) => issue.input === undefined ? "Informe uma descrição" : undefined,
       })
       .min(3, "A descrição deve ter pelo menos 3 caracteres")
       .max(200, "A descrição é muito longa (máximo 200 caracteres)"),
     category_id: z.string().optional(),
     account_id: z.string({
-      required_error: "Selecione uma conta",
+      error: (issue) => issue.input === undefined ? "Selecione uma conta" : undefined,
     }),
     status: z.enum(["paid", "pending"], {
-      required_error: "Informe se foi pago ou está pendente",
+      error: (issue) => issue.input === undefined ? "Informe se foi pago ou está pendente" : undefined,
     }),
     payment_date: z.date().optional(),
     due_date: z.date().optional(),
@@ -157,7 +156,7 @@ export function TransactionForm({
   const { data: accounts = [] } = useActiveAccounts();
 
   // Form setup
-  const form = useForm<TransactionFormValues>({
+  const form = useForm<z.input<typeof transactionSchema>, unknown, TransactionFormValues>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: "expense",
@@ -178,7 +177,7 @@ export function TransactionForm({
 
   const watchType = form.watch("type");
   const watchStatus = form.watch("status");
-  const watchTags = form.watch("tags");
+  const watchTags = form.watch("tags") ?? [];
 
   // Atualizar is_recurring baseado no modo selecionado
   const handleModeChange = (mode: "single" | "recurring") => {
